@@ -1,5 +1,8 @@
 import styled from "styled-components";
-import { BlockDiv, ThidleThinkUserContentMainContainer, ThidleThinkTopInfoContainer, DefaultSpan, ThidleThinkUserPicture, ThidleThinkOptionButtonIcon } from ".";
+import { 
+    BlockDiv, ThidleThinkUserContentMainContainer, ThidleThinkTopInfoContainer, DefaultSpan, 
+    ThidleThinkUserPicture, ThidleThinkOptionButtonIcon, ThidleThinkOptionButton, ThidleThinkOptionButtonText 
+} from ".";
 
 const ThidleThinkMainPublicationMiniContainer = styled.div`
     width: 100%;
@@ -80,33 +83,6 @@ const ThidleThinkMiniContentText = styled.span`
 
 const ThidleThinkMiniOptionsContainer = styled.div`
     margin-top: 5px;
-`
-
-const ThidleThinkOptionButton = styled.div`
-    display: inline-block;
-    color: #80888C;
-    font-size: 0px;
-
-    :not(:last-child) {
-        margin-right: 30px;
-    }
-
-    ${props => props.active ? `
-        ${ThidleThinkOptionButtonIcon}:hover {
-            color: white;
-        }
-    ` : `color: #C55A11;`}
-`
-
-
-
-const ThidleThinkOptionButtonText = styled.span`
-    display: inline-block;
-    font-size: 7pt;
-    font-family: 'Montserrat', sans-serif;
-    vertical-align: middle;
-    padding: 4px 2px;
-    cursor: pointer;
 `
 
 export default function ThidleThinkMiniPublication(props){
