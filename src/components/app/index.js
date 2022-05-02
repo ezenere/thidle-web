@@ -241,6 +241,7 @@ export const ThidleThinkTopInfoContainer = styled.div`
 
 export const BlockDiv = styled.div`
     display: block;
+    ${props => props.disableUserSelect ? 'user-select: none;' : ''}
 `
 
 export const ThidleThinkUserPicture = styled.img`
@@ -251,4 +252,20 @@ export const ThidleThinkUserPicture = styled.img`
 export const ThidleThinkUserContentMainContainer = styled.div`
     flex: 1 0 auto;
     min-width: 0px;
+`
+
+export const DefaultSpan = styled.span`
+    display: inline;
+`
+
+export const ThidleThinkOptionButtonIcon = styled.span.attrs({
+    className: 'material-icons-round'
+})`
+    font-size: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    padding: 4px;
+    margin-left: -4px;
+    cursor: pointer;
+    transition: color 0.2s;
 `

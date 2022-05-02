@@ -1,43 +1,5 @@
 import styled from "styled-components";
-import { BlockDiv, ThidleThinkUserContentMainContainer, ThidleThinkTopInfoContainer } from ".";
-
-export default function ThidleThinkMiniPublication(props){
-    return (
-        <ThidleThinkMainPublicationMiniContainer>
-            <ThidleThinkTopInfoContainer>
-                <BlockDiv>
-                    <ThidleThinkMiniUserPictureContainer>
-                        <ThidleThinkUserPicture alt="Thidle Think User Picture" src="https://scontent.fbfh17-1.fna.fbcdn.net/v/t1.6435-1/p200x200/138376100_3685230564906254_4045498374643321894_n.jpg?_nc_cat=110&ccb=1-5&_nc_sid=7206a8&_nc_ohc=XDopRUXu_dsAX_TidYf&_nc_ht=scontent.fbfh17-1.fna&oh=0e9b24ee97e7fd7ffa47f7713b121ef0&oe=61CAAF6B"/>
-                    </ThidleThinkMiniUserPictureContainer>
-                </BlockDiv>
-                <ThidleThinkUserContentMainContainer>
-                    <div class="thidle-think-mini-user-info-name-container">
-                        <span class="thidle-think-mini-user-complete-info-container"><span class="thidle-think-mini-user-info-name">Guilherme Scroccaro</span><span class="thidle-think-mini-user-info-username">@guilherme</span></span>
-                    </div>
-                    <div class="thidle-think-mini-content-container">
-                        <div class="thidle-think-mini-content-text">tive uma ideia muito boa</div>
-                    </div>
-                    <div class="thidle-think-mini-options-container">
-                        <div class="thidle-think-options-left-box">
-                            <div class="thidle-think-option-button active">
-                                <span class="thidle-think-option-button-icon material-icons">favorite</span>
-                                <span class="thidle-think-option-button-text">15K</span>
-                            </div>
-                            <div class="thidle-think-option-button">
-                                <span class="thidle-think-option-button-icon material-icons">repeat</span>
-                                <span class="thidle-think-option-button-text">5K</span>
-                            </div>
-                            <div class="thidle-think-option-button">
-                                <span class="thidle-think-option-button-icon material-icons">comment</span>
-                                <span class="thidle-think-option-button-text">561</span>
-                            </div>
-                        </div>
-                    </div>
-                </ThidleThinkUserContentMainContainer>
-            </ThidleThinkTopInfoContainer>
-        </ThidleThinkMainPublicationMiniContainer>
-    )
-}
+import { BlockDiv, ThidleThinkUserContentMainContainer, ThidleThinkTopInfoContainer, DefaultSpan, ThidleThinkUserPicture, ThidleThinkOptionButtonIcon } from ".";
 
 const ThidleThinkMainPublicationMiniContainer = styled.div`
     width: 100%;
@@ -63,6 +25,9 @@ const ThidleThinkMainPublicationMiniContainer = styled.div`
         background-color: #22303e;
         pointer-events: none;
     }
+    &${ThidleThinkOptionButtonIcon}{
+        font-size: 14px;
+    }
 `
 
 const ThidleThinkMiniUserPictureContainer = styled.div`
@@ -72,3 +37,115 @@ const ThidleThinkMiniUserPictureContainer = styled.div`
     border-radius: 50%;
     margin-right: 10px;
 `
+
+const ThidleThinkMiniUserInfoNameContainer = styled.div`
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 7.5pt;
+    font-weight: 600;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    width: 100%;
+    overflow: hidden;
+`
+
+const ThidleThinkMiniUserCompleteInfoContainer = styled.span`
+    :hover > span {
+        text-decoration: underline;
+    }
+`
+
+const ThidleThinkMiniUserInfoUsername = styled.span`
+    font-weight: 300;
+    font-size: 9pt;
+    color: rgb(255 255 255 / 20%);
+    font-family: 'Ubuntu', sans-serif;
+    ::before {
+        content: '-';
+        padding: 0px 10px;
+        display: inline-block;
+    }
+`
+
+const ThidleThinkMiniContentText = styled.span`
+    white-space: pre-wrap;
+    font-size: 8pt;
+    font-family: 'Ubuntu', sans-serif;
+    color: rgb(255 255 255 / 90%);
+    text-overflow: ellipsis;
+    overflow: hidden;
+    word-break: break-word;
+    margin-top: 7px;
+`
+
+const ThidleThinkMiniOptionsContainer = styled.div`
+    margin-top: 5px;
+`
+
+const ThidleThinkOptionButton = styled.div`
+    display: inline-block;
+    color: #80888C;
+    font-size: 0px;
+
+    :not(:last-child) {
+        margin-right: 30px;
+    }
+
+    ${props => props.active ? `
+        ${ThidleThinkOptionButtonIcon}:hover {
+            color: white;
+        }
+    ` : `color: #C55A11;`}
+`
+
+
+
+const ThidleThinkOptionButtonText = styled.span`
+    display: inline-block;
+    font-size: 7pt;
+    font-family: 'Montserrat', sans-serif;
+    vertical-align: middle;
+    padding: 4px 2px;
+    cursor: pointer;
+`
+
+export default function ThidleThinkMiniPublication(props){
+    return (
+        <ThidleThinkMainPublicationMiniContainer>
+            <ThidleThinkTopInfoContainer>
+                <BlockDiv>
+                    <ThidleThinkMiniUserPictureContainer>
+                        <ThidleThinkUserPicture alt={`${props.name} Profile`} src={props.picture}/>
+                    </ThidleThinkMiniUserPictureContainer>
+                </BlockDiv>
+                <ThidleThinkUserContentMainContainer>
+                    <ThidleThinkMiniUserInfoNameContainer>
+                        <ThidleThinkMiniUserCompleteInfoContainer>
+                            <DefaultSpan>{props.name}</DefaultSpan>
+                            <ThidleThinkMiniUserInfoUsername>@{props.username}</ThidleThinkMiniUserInfoUsername>
+                        </ThidleThinkMiniUserCompleteInfoContainer>
+                    </ThidleThinkMiniUserInfoNameContainer>
+                    <BlockDiv>
+                        <ThidleThinkMiniContentText>{props.text}</ThidleThinkMiniContentText>
+                    </BlockDiv>
+                    <ThidleThinkMiniOptionsContainer>
+                        <BlockDiv disableUserSelect={true}>
+                            <ThidleThinkOptionButton active={props.liked}>
+                                <ThidleThinkOptionButtonIcon>favorite</ThidleThinkOptionButtonIcon>
+                                <ThidleThinkOptionButtonText>{props.likes}</ThidleThinkOptionButtonText>
+                            </ThidleThinkOptionButton>
+                            <ThidleThinkOptionButton active={props.reposted}>
+                                <ThidleThinkOptionButtonIcon>repeat</ThidleThinkOptionButtonIcon>
+                                <ThidleThinkOptionButtonText>{props.reposts}</ThidleThinkOptionButtonText>
+                            </ThidleThinkOptionButton>
+                            <ThidleThinkOptionButton active={props.commented}>
+                                <ThidleThinkOptionButtonIcon>comment</ThidleThinkOptionButtonIcon>
+                                <ThidleThinkOptionButtonText>{props.comments}</ThidleThinkOptionButtonText>
+                            </ThidleThinkOptionButton>
+                        </BlockDiv>
+                    </ThidleThinkMiniOptionsContainer>
+                </ThidleThinkUserContentMainContainer>
+            </ThidleThinkTopInfoContainer>
+        </ThidleThinkMainPublicationMiniContainer>
+    )
+}

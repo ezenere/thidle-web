@@ -71,7 +71,7 @@ export function AppLargeUserInfo(props){
         <AppLargeUserInfoContainer to={`/${props.username}`}>
             <AppLargeUserInfoPictureOutlineContainer>
                 <AppLargeUserInfoPictureContainer>
-                    <AppLargeUserInfoPicture src={props.picture} alt={`${props.name} Profile` }/>
+                    <AppLargeUserInfoPicture src={props.picture} alt={`${props.name} Profile`}/>
                 </AppLargeUserInfoPictureContainer>
             </AppLargeUserInfoPictureOutlineContainer>
             <AppLargeUserInfoDetailsOutlineContainer>
