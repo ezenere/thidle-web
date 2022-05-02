@@ -86,7 +86,7 @@ const AppNavAnchorText = styled.span`
 `
 
 const AppNavAnchorIcon = styled.span.attrs({
-    className: 'material-icons'
+    className: 'material-icons-round'
 })`
     display: inline-block;
     vertical-align: middle;
@@ -125,7 +125,7 @@ export const AppNavRightSizer = styled.div`
     justify-content: center;
     align-items: center;
     float: right;
-    width: 275px;
+    width: 310px;
 `
 
 export const AppNavSearchBarContainer = styled.div`
@@ -152,7 +152,7 @@ export const AppNavSearchBarIconContainer = styled.div`
 `
 
 export const AppNavSearchBarIcon = styled.span.attrs({
-    className: 'material-icons'
+    className: 'material-icons-round'
 })`
     color: inherit;
     font-size: 22px;
@@ -199,7 +199,7 @@ export const AppNavNewThoughtButton = styled.button`
 `
 
 export const AppNavNewThoughtButtonIcon = styled.span.attrs({
-    className: 'material-icons'
+    className: 'material-icons-round'
 })`
     font-size: 20px;
     color: inherit;
@@ -228,4 +228,27 @@ export const MainAppContainer = styled.div`
     max-width: 950px;
     margin: auto;
     margin-top: 80px;
+`
+
+export const ThidleThinkTopInfoContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+`
+
+export const BlockDiv = styled.div`
+    display: block;
+`
+
+export const ThidleThinkUserPicture = styled.img`
+    width: 100%;
+    transition: filter 0.2s;
+`
+
+export const ThidleThinkUserContentMainContainer = styled.div`
+    flex: 1 0 auto;
+    min-width: 0px;
 `

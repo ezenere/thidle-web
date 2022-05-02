@@ -9,7 +9,7 @@ export default function Menu(){
             <AppNavContainer>
                 <AppNavAnchorsContainer>
                     <AppNavAnchor to="/" title="Home" icon="home" />
-                    <AppNavAnchor to="/trendings" title="Trendings" icon="trending_up"  />
+                    <AppNavAnchor to="/trending" title="Trending" icon="trending_up"  />
                     <AppNavAnchor to="/notifications" title="Notifications" icon="notifications" />
                     <AppNavAnchor to="/discover" title="Discover" icon="explore" />
                     <AppNavAnchor to="/messages" title="Messages" icon="chat" />
