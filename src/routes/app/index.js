@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Menu from "../../components/app/menu";
 import Feed from "./main";
+import Profile from "./profile";
 import { UserContext } from "../../contexts/user"
 
 
@@ -27,6 +28,16 @@ export default function MainApp(){
             <Menu />
             <Routes>
                 <Route path="/" element={<Feed />} />
+                <Route path="*" element={<Profile
+                    backgroundImage={userInfoValues.background}
+                    backgroundAlt={'Teste'}
+                    userImage={userInfoValues.profile}
+                    name={userInfoValues.name}
+                    username={userInfoValues.username}
+                    observers={100}
+                    observing={100}
+                    thoughts={100}
+                />} />
             </Routes>
         </UserContext.Provider>
     );

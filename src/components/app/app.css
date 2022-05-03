@@ -482,6 +482,7 @@ span.add-new-post-additional-option-text {
 .thidle-think-user-picture-main-container {
     flex: 0 1 auto;
     user-select: none;
+    position: relative;
 }
 
 .thidle-think-user-info-main-container {
@@ -776,6 +777,7 @@ i.thidle-think-content-image-album-image-selector {
     position: relative;
     transition: background-color 0.2s;
     box-shadow: 0px 0px 6px black;
+    cursor: pointer;
 }
 
 i.thidle-think-content-image-album-image-selector::before {
@@ -804,7 +806,7 @@ i.thidle-think-content-image-album-image-selector.active::before{
     position: relative;
 }
 
-.thidle-think-comments-container:not(:empty)::before {
+/*.thidle-think-comments-container:not(:empty)::before {
     content: '';
     height: 1px;
     width: calc(100% - 29px);
@@ -812,7 +814,7 @@ i.thidle-think-content-image-album-image-selector.active::before{
     position: absolute;
     top: 0px;
     left: 29px;
-}
+}*/
 
 .thidle-think-comments-container:not(:empty)::after {
     position: absolute;
@@ -828,8 +830,8 @@ i.thidle-think-content-image-album-image-selector.active::before{
     position: absolute;
     top: 18px;
     content: '';
-    left: -11px;
-    width: 8px;
+    left: -17px;
+    width: 15px;
     height: 1px;
     background-color: #033655;
 }
@@ -838,7 +840,7 @@ i.thidle-think-content-image-album-image-selector.active::before{
     position: absolute;
     top: -10px;
     content: '';
-    left: -12px;
+    left: -17px;
     width: 1px;
     height: 29px;
     background-color: #033655;
@@ -862,10 +864,20 @@ i.thidle-think-content-image-album-image-selector.active::before{
     background-color: #033655;
 }
 
+.thidle-think-main-publication-container.comment.isSubcomment .thidle-think-user-picture-main-container::after {
+    position: absolute;
+    content: '';
+    height: 18px;
+    width: 1px;
+    left: 18px;
+    bottom: calc(100% + 2px);
+    background-color: #033655;
+}
+
 .thidle-think-main-publication-container.comment:not(:first-child){
     position: relative;
 }
-.thidle-think-main-publication-container.comment:not(:first-child)::after {
+/*.thidle-think-main-publication-container.comment:not(:first-child)::after {
     content: '';
     position: absolute;
     top: 0px;
@@ -873,7 +885,7 @@ i.thidle-think-content-image-album-image-selector.active::before{
     width: 100%;
     left: 0px;
     background-color: #22303e;
-}
+}*/
 
 .thidle-think-primary-content-isolation:hover {
     background-color: rgba(255, 255, 255, 0.03);
@@ -885,6 +897,10 @@ i.thidle-think-content-image-album-image-selector.active::before{
     padding: 10px;
     border-radius: 15px;
     cursor: pointer;
+}
+
+.thidle-think-main-publication-container.comment > .thidle-think-primary-content-isolation{
+    padding-left: 15px
 }
 
 img.thidle-think-user-picture:hover {
@@ -942,6 +958,14 @@ span.thidle-think-mini-user-info-username::before {
     overflow: hidden;
     word-break: break-word;
     margin-top: 7px;
+}
+
+.thidle-think-mini-user-picture-container {
+    width: 34px;
+    height: 34px;
+    overflow: hidden;
+    border-radius: 50%;
+    margin-right: 10px;
 }
 
 .thidle-think-main-publication-mini-container span.thidle-think-option-button-icon {
@@ -1052,3 +1076,21 @@ iframe.main-app-frame {
     height: 100%;
     border: none;
 }
+
+.thidle-user-profile-main-info-background-container {width: 100%;height: 350px;}
+
+.thidle-user-profile-main-info-background-image-container {width: 100%;height: 100%;}
+
+img.thidle-user-profile-main-info-background-image {width: 100%;height: 100%;object-fit: cover;object-position: center;}
+
+img.thidle-user-profile-image {width: 100%;height: 100%;}
+
+.thidle-user-profile-image-container {width: 170px;position: absolute;bottom: 0px;overflow: hidden;left: 20px;border-radius: 50%;height: 170px;border: 4px solid #011019;}
+
+.thidle-user-profile-main-info-container {position: relative;}
+
+.thidle-user-profile-info-container {margin-left: 145px;}
+
+button.thidle-user-profile-observe-button {float: right;border-radius: 25px;background-color: transparent;border: 1px solid #c55a11;color: #c55a11;padding: 0px;text-align: center;width: 110px;}
+
+span.thidle-user-profile-observe-button-icon.material-icons-round {display: inline;display: inline-block;}

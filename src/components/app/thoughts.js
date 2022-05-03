@@ -1,95 +1,64 @@
 import { useEffect, useRef, useState } from "react";
-import { BlockDiv, DefaultSpan } from ".";
-import { 
-    ThidleThinkMainPublicationContainer, 
-    ThidleThinkPrimaryContentIsolation, 
-    ThidleThinkTopInfoContainer, 
-    ThidleThinkUserPictureMainContainer, 
-    ThidleThinkUserPictureContainer, 
-    ThidleThinkUserInfoNameContainer, 
-    ThidleThinkUserInfoMainContainer, 
-    ThidleThinkUserCompleteInfoContainer,
-    ThidleThinkInfoContainer,
-    ThidleThinkInfoPrivacy,
-    ThidleThinkInfoDate,
-    ThidleThinkOptionsMainContainer,
-    ThidleThinkOptionsButton,
-    ThidleThinkContentContainer,
-    ThidleThinkContentText,
-    ThidleThinkOptionsContainer,
-    ThidleThinkOptionsRightBox,
-    ThidleThinkOptionsIcon,
-    ThidleThinkOptionButton,
-    ThidleThinkOptionButtonIcon,
-    ThidleThinkOptionButtonText,
-    ThidleThinkUserPicture,
-    ThidleThinkUserInfoUsername,
-    ThidleThinkContentImageAlbumContainer,
-    ThidleThinkContentImageAlbum,
-    ThidleThinkContentImage,
-    ThidleThinkContentImageAlbumPrevious,
-    ThidleThinkContentImageAlbumNext,
-    ThidleThinkContentImageContainer,
-    ThidleThinkContentImageAlbumOptionsContainer,
-    ThidleThinkContentImageAlbumImageSelectors,
-    ThidleThinkContentImageAlbumImageSelector
-} from "./thoughts-components";
 
 export function Thought(props){
     return (
-        <ThidleThinkMainPublicationContainer>
-            <ThidleThinkPrimaryContentIsolation>
-                <ThidleThinkTopInfoContainer>
-                    <ThidleThinkUserPictureMainContainer>
-                        <ThidleThinkUserPictureContainer>
-                            <ThidleThinkUserPicture alt={`${props.name} Profile`} src={props.picture}/>
-                        </ThidleThinkUserPictureContainer>
-                    </ThidleThinkUserPictureMainContainer>
-                    <ThidleThinkUserInfoMainContainer>
-                        <ThidleThinkUserInfoNameContainer>
-                            <ThidleThinkUserCompleteInfoContainer>
-                                <DefaultSpan>{props.name}</DefaultSpan>
-                                <ThidleThinkUserInfoUsername>@{props.username}</ThidleThinkUserInfoUsername>
-                            </ThidleThinkUserCompleteInfoContainer>
-                        </ThidleThinkUserInfoNameContainer>
-                        <ThidleThinkInfoContainer>
-                            <ThidleThinkInfoPrivacy>{['Public', 'Selected People', 'Friends Only', 'Anonymous'][props.privacy]}</ThidleThinkInfoPrivacy>
-                            <ThidleThinkInfoDate>{props.date}</ThidleThinkInfoDate>
-                        </ThidleThinkInfoContainer>
-                    </ThidleThinkUserInfoMainContainer>
-                    <ThidleThinkOptionsMainContainer>
-                        <ThidleThinkOptionsButton>
-                            <ThidleThinkOptionsIcon>more_horiz</ThidleThinkOptionsIcon>
-                        </ThidleThinkOptionsButton>
-                    </ThidleThinkOptionsMainContainer>
-                </ThidleThinkTopInfoContainer>
-                <ThidleThinkContentContainer>
-                    <ThidleThinkContentText>{props.text}</ThidleThinkContentText>
+        <div className={`thidle-think-main-publication-container${props.isComment ? ' comment' : ''}${props.primary ? ' is-primary-comment' : ''}${props.hasContinuation ? ' has-continuation' : ''}${props.isSubcomment ? ' isSubcomment' : ''}`}>
+            <div className="thidle-think-primary-content-isolation">
+                <div className="thidle-think-top-info-container">
+                    <div className="thidle-think-user-picture-main-container">
+                        <div className="thidle-think-user-picture-container">
+                            <img className="thidle-think-user-picture" alt={`${props.name} Profile`} src={props.picture}/>
+                        </div>
+                    </div>
+                    <div className="thidle-think-user-info-main-container">
+                        <div className="thidle-think-user-info-name-container">
+                            <span className="thidle-think-user-complete-info-container">
+                                <span className="thidle-think-user-info-name">Barbaa</span>
+                                <span className="thidle-think-user-info-username">@barbosa</span>
+                            </span>
+                        </div>
+                        <div className="thidle-think-info-container">
+                            <span className="thidle-think-info-privacy">{['Public', 'Selected People', 'Friends Only', 'Anonymous'][props.privacy]}</span>
+                            <span className="thidle-think-info-date">{props.date}</span>
+                        </div>
+                    </div>
+                    <div className="thidle-think-options-main-container">
+                        <button className="thidle-think-options-button">
+                            <span className="thidle-think-options-icon material-icons">more_horiz</span>
+                        </button>
+                    </div>
+                </div>
+                <div className="thidle-think-content-container">
+                    <div className="thidle-think-content-text">{props.text}</div>
                     {props.images?.length > 0 ? <ThoughtImages images={props.images}/> : ''}
-                </ThidleThinkContentContainer>
-                <ThidleThinkOptionsContainer>
-                    <ThidleThinkOptionsRightBox>
-                        <ThidleThinkOptionButton>
-                            <ThidleThinkOptionButtonIcon>share</ThidleThinkOptionButtonIcon>
-                        </ThidleThinkOptionButton>
-                    </ThidleThinkOptionsRightBox>
-                    <BlockDiv>
-                        <ThidleThinkOptionButton active={props.liked}>
-                            <ThidleThinkOptionButtonIcon>favorite</ThidleThinkOptionButtonIcon>
-                            <ThidleThinkOptionButtonText>{props.likes}</ThidleThinkOptionButtonText>
-                        </ThidleThinkOptionButton>
-                        <ThidleThinkOptionButton active={props.reposted}>
-                            <ThidleThinkOptionButtonIcon>repeat</ThidleThinkOptionButtonIcon>
-                            <ThidleThinkOptionButtonText>{props.reposts}</ThidleThinkOptionButtonText>
-                        </ThidleThinkOptionButton>
-                        <ThidleThinkOptionButton active={props.commented}>
-                            <ThidleThinkOptionButtonIcon>comment</ThidleThinkOptionButtonIcon>
-                            <ThidleThinkOptionButtonText>{props.comments}</ThidleThinkOptionButtonText>
-                        </ThidleThinkOptionButton>
-                    </BlockDiv>
-                </ThidleThinkOptionsContainer>
-            </ThidleThinkPrimaryContentIsolation>
-        </ThidleThinkMainPublicationContainer>
+                    {props.hasRethink ? <Rethink {...props} /> : ''}
+                </div>
+                {!props.isRethink ?
+                <div className="thidle-think-options-container">
+                    <div className="thidle-think-options-right-box">
+                        <div className="thidle-think-option-button">
+                            <span className="thidle-think-option-button-icon active material-icons">share</span>
+                        </div>
+                    </div>
+                    <div className="thidle-think-options-left-box">
+                        <div className={`thidle-think-option-button material-icons${props.liked ? ' active' : ''}`}>
+                            <span className="thidle-think-option-button-icon material-icons-round">favorite</span>
+                            <span className="thidle-think-option-button-text">{props.likes}</span>
+                        </div>
+                        <div className={`thidle-think-option-button material-icons${props.reposted ? ' active' : ''}`}>
+                            <span className="thidle-think-option-button-icon material-icons-round">repeat</span>
+                            <span className="thidle-think-option-button-text">{props.reposts}</span>
+                        </div>
+                        <div className={`thidle-think-option-button material-icons${props.commented ? ' active' : ''}`}>
+                            <span className="thidle-think-option-button-icon material-icons-round">comment</span>
+                            <span className="thidle-think-option-button-text">{props.comments}</span>
+                        </div>
+                    </div>
+                </div>
+                : ''}
+            </div>
+            <Comments {...props}/>
+        </div>
     )
 }
 
@@ -118,28 +87,47 @@ function ThoughtImages(props){
         } 
     }
 
-    for(let c = 0; c < props.images.length; c++) props.images[c].active = c == currentImage;
+    for(let c = 0; c < props.images.length; c++) props.images[c].active = c === currentImage;
 
     return(
-        <ThidleThinkContentImageAlbumContainer>
-            <ThidleThinkContentImageAlbum ref={overflow}>
+        <div className="thidle-think-content-image-album-container">
+            <div className="thidle-think-content-image-album" ref={overflow}>
                 {props.images.map((image, index) => {
                     return (
-                        <ThidleThinkContentImageContainer key={index}>
-                            <ThidleThinkContentImage alt={image.alt} src={image.url}/>
-                        </ThidleThinkContentImageContainer>
+                        <div className="thidle-think-content-image-container" key={index}>
+                            <img className="thidle-think-content-image" alt={image.alt} src={image.url}/>
+                        </div>
                     )
                 })}
-            </ThidleThinkContentImageAlbum>
-            <ThidleThinkContentImageAlbumOptionsContainer>
-                {props.images.length > 1 && (props.images.length-1) > currentImage ? <ThidleThinkContentImageAlbumNext onClick={() => changeImage(1)}/> : ''}
-                {props.images.length > 1 && currentImage > 0 ? <ThidleThinkContentImageAlbumPrevious onClick={() => changeImage(-1)}/> : ''}
-                <ThidleThinkContentImageAlbumImageSelectors>
+            </div>
+            <div className="thidle-think-content-image-album-options-container">
+                {props.images.length > 1 && (props.images.length-1) > currentImage ? <div className="thidle-think-content-image-album-next material-icons-round" onClick={() => changeImage(1)}/> : ''}
+                {props.images.length > 1 && currentImage > 0 ?  <div className="thidle-think-content-image-album-previous material-icons-round" onClick={() => changeImage(-1)}/> : ''}
+                <div className="thidle-think-content-image-album-image-selectors">
                     {props.images.map((image, index) => {
-                        return <ThidleThinkContentImageAlbumImageSelector onClick={() => changeImage(index, true)} key={image.id} active={image.active}/>
+                        return <i className={`thidle-think-content-image-album-image-selector${image.active ? ' active' : ''}`} onClick={() => changeImage(index, true)} key={index}/>
                     })}
-                </ThidleThinkContentImageAlbumImageSelectors>
-            </ThidleThinkContentImageAlbumOptionsContainer>
-        </ThidleThinkContentImageAlbumContainer>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function Rethink(props){
+    return (
+        <div className="thidle-rethink-content-container">
+            <Thought {...props.rethink} isRethink={true} />
+        </div>
+    )
+}
+
+function Comments(props){
+    return (
+        <div className="thidle-think-comments-container">{
+            (props.commentItems ?? []).map((comment, index) => {
+                let needContinuation = props.commentItems.reduce((f, c, cidx) => (c.primary && cidx > index) || f, false)
+                return <Thought key={index} {...comment} isComment={true} hasContinuation={needContinuation}/>;
+            })
+        }</div>
     )
 }

@@ -51,9 +51,9 @@ function Anchor(props){
     let match = useMatch({ path: resolved.pathname, end: true });
 
     return (
-        <AnchorContainer active={match ? true : false} to={props.to}>
-            <AnchorIcon active={match ? true : false}>{props.icon}</AnchorIcon>
-            <AnchorText active={match ? true : false}>{props.title}</AnchorText>
+        <AnchorContainer isActive={match ? true : false} to={props.to}>
+            <AnchorIcon isActive={match ? true : false}>{props.icon}</AnchorIcon>
+            <AnchorText isActive={match ? true : false}>{props.title}</AnchorText>
         </AnchorContainer>
     )
 }
@@ -110,7 +110,7 @@ const AnchorContainer = styled(Link)`
     :not(:first-child) {
         border-left: 1px solid #033655;
     }
-    ${props => props.active ? `
+    ${props => props.isActive ? `
         ::before{
             width: calc(100% - 15px);
         }
@@ -134,7 +134,7 @@ const AnchorText = styled.span`
     transition: padding-left 0.2s, max-width 0.2s;
     overflow: hidden;
     ${props => {
-        if(props.active) return `
+        if(props.isActive) return `
         padding-left: 10px;
         max-width: 100px;
         `

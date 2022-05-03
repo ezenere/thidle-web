@@ -1,5 +1,6 @@
 import './components/reset.css';
 import './components/main.css';
+import './components/app/app.css';
 import { BrowserRouter } from "react-router-dom"
 import LoginApp from './routes/login';
 import MainApp from './routes/app';
