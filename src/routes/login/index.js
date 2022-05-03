@@ -1,8 +1,12 @@
+import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Login } from "./login";
 import SignUp from "./signup";
 
 export default function LoginApp(){
+    useEffect(() => {
+        document.body.classList.remove("app");
+    });
     return (
         <Routes>
             <Route path="/" element={<Login />} />

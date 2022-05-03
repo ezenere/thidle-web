@@ -6,7 +6,7 @@ body {
     height: 100%;
 }
 
-body::before {
+body:not(.app)::before {
     content: '';
     position: fixed;
     z-index: -1;
