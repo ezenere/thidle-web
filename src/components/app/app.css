@@ -1091,6 +1091,22 @@ img.thidle-user-profile-image {width: 100%;height: 100%;}
 
 .thidle-user-profile-info-container {margin-left: 145px;}
 
-button.thidle-user-profile-observe-button {float: right;border-radius: 25px;background-color: transparent;border: 1px solid #c55a11;color: #c55a11;padding: 0px;text-align: center;width: 110px;}
+button.thidle-user-profile-observe-button {float: right;border-radius: 25px;background-color: transparent;border: 1px solid #c55a11;color: #c55a11;padding: 0px;text-align: center;width: 110px;cursor: pointer}
 
-span.thidle-user-profile-observe-button-icon.material-icons-round {display: inline;display: inline-block;}
+span.thidle-user-profile-observe-button-icon.material-icons-round {display: inline-block; margin-left: 7px;}
+
+span.thidle-user-profile-observe-button-text {display: inline-block;font-family: 'Montserrat';font-weight: 300;}
+
+button.thidle-user-profile-observe-button > span {vertical-align: middle}
+
+span.thidle-user-profile-name {display: block;color: white;font-family: 'Ubuntu';font-weight: 500;margin-left: 65px;font-size: 20px;}
+
+span.thidle-user-profile-username {margin-left: 58px;color: white;margin-top: 9px;display: block;font-family: 'Ubuntu';font-size: 14px;font-weight: 100;opacity: 0.30;}
+
+.thidle-user-profile-stats-container {display: flex;margin-left: 10px;margin-top: 11px;padding-bottom: 5px;}
+
+.thidle-user-profile-stat {flex: 1 1 auto;color: white;font-family: 'Ubuntu';text-align: center;font-size: 14px;}
+
+span.thidle-user-profile-stat-number {font-weight: 600;}
+
+span.thidle-user-profile-stat-text {font-weight: 200;margin-left: 4px;color: rgb(191, 191, 191);}

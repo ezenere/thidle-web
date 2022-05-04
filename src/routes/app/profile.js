@@ -30,15 +30,15 @@ export default function Profile(props){
                         <div className="thidle-user-profile-stats-container">
                             <div className="thidle-user-profile-stat">
                                 <span class="thidle-user-profile-stat-number">{props.observers}</span>
-                                <span class="thidle-user-profile-stat-number">Observers</span>
+                                <span class="thidle-user-profile-stat-text">Observers</span>
                             </div>
                             <div className="thidle-user-profile-stat">
                                 <span class="thidle-user-profile-stat-number">{props.observing}</span>
-                                <span class="thidle-user-profile-stat-number">Observers</span>
+                                <span class="thidle-user-profile-stat-text">Observers</span>
                             </div>
                             <div className="thidle-user-profile-stat">
                                 <span class="thidle-user-profile-stat-number">{props.thoughts}</span>
-                                <span class="thidle-user-profile-stat-number">Observers</span>
+                                <span class="thidle-user-profile-stat-text">Observers</span>
                             </div>
                         </div>
                     </div>
