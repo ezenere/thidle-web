@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import styled from "styled-components";
+import { AdditionalOption, OptionsContainer } from ".";
 import { UserContext } from "../../contexts/user";
 
 export default function NewThought(props){
@@ -27,16 +28,7 @@ export default function NewThought(props){
     )
 }
 
-function AdditionalOption(props){
-    return (
-        <AdditionalOptionContainer>
-            <AdditionalOptionButton>
-                <AdditionalOptionIcon>{props.icon}</AdditionalOptionIcon>
-                <AdditionalOptionText>{props.title}</AdditionalOptionText>
-            </AdditionalOptionButton>
-        </AdditionalOptionContainer>
-    )
-}
+
 
 
 
@@ -102,45 +94,3 @@ const Textarea = styled.div`
     }
 `
 
-const OptionsContainer = styled.div`
-    display: flex;
-    margin-top: 12px;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: center;
-    align-items: center;
-`
-
-const AdditionalOptionContainer = styled.div`
-    flex: 1 1 auto;
-    text-align: center;
-    user-select: none;
-`
-
-const AdditionalOptionButton = styled.span`
-    color: rgb(255 255 255 / 75%);
-    display: inline-block;
-    cursor: pointer;
-    transition: color 0.2s;
-    :hover{
-        color: white;
-    }
-`
-
-const AdditionalOptionIcon = styled.span.attrs({
-    className: 'material-icons-round'
-})`
-    font-size: 14px;
-    display: inline-block;
-    vertical-align: middle;
-`
-
-const AdditionalOptionText = styled.span`
-    font-size: 7pt;
-    font-family: 'Montserrat', sans-serif;
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 10px;
-    font-weight: 500;
-`
