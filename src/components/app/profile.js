@@ -1,8 +1,39 @@
+import { useEffect, useState } from "react";
+import { FullDate, MonthAndYear, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
+import { HomeTown } from "../../workers/profile"
+
 export default function RightUserInfo(props){
+    const [active, setActive] = useState(false);
+
+    useEffect(() => {
+        const th = document.querySelector("#thidle")
+        const onScroll = () => {
+            let st = th.scrollTop;
+            if(st > 450 && !active) setActive(true);
+            else if(st < 450 && active) setActive(false);
+        }
+
+        th.removeEventListener('scroll', onScroll);
+        th.addEventListener('scroll', onScroll, { passive: true });
+        return () => th.removeEventListener('scroll', onScroll);
+    });
+
+    console.log(active)
+
     return (
         <div className="user-profile-right-info-container">
+            <div className={`user-profile-right-info-user-container${active ? ' active' : ''}`}>
+                <div className="user-profile-right-info-user-picture-container">
+                    <img className="user-profile-right-info-user-picture" alt="Current Profile" src={props.userImage}/>
+                </div>
+                <div className="user-profile-right-info-user-info-container">
+                    <span class="thidle-user-profile-name-right">Eduardo Zenere</span>
+                    <span class="thidle-user-profile-username-right">@ezenere</span>
+                </div>
+            </div>
+
             <div className="user-profile-right-info-top">
-                <span className="user-profile-since-text">Thinking since, {props.creation}</span>
+                <span className="user-profile-since-text">Thinking since, {MonthAndYear(props.creation)}</span>
                 <div className="user-profile-report-button">
                     <span className="user-profile-report-button-icon material-icons">flag</span>
                 </div>
@@ -11,27 +42,37 @@ export default function RightUserInfo(props){
             <div className="user-profile-right-info-description-container">{props.description}</div>
 
             <div className="user-profile-right-info-additional-data-container">
-                <RInfoDataItem value={props.hometown} icon="home" />
-                <RInfoDataItem value={props.birthday} icon="cake" />
-                <RInfoDataItem value={{"M":"Male","F":"Female","T":"Transgender","O":"Other"}[props.gender]} icon={{"M":"male","F":"female","T":"transgender","O":"transgender"}[props.gender]} />
-                <RInfoDataItem value={props.website} icon="language" url={props.website} />
-                <RInfoDataItem value={props.instagram} icon="instagram" url={props.instagram} />
+                {props.country ? <RInfoDataItem value={HomeTown(props)} icon="house" /> : ''}
+                {props.displayBirthday ? <RInfoDataItem value={FullDate(props.birthday)} icon="cake" /> : ''}
+                {props.gender !== "N" ? <RInfoDataItem value={{"M":"Male","F":"Female","T":"Transgender","O":"Other"}[props.gender]} icon={{"M":"male","F":"female","T":"transgender","O":"transgender"}[props.gender]} /> : ''}
+                {props.website ? <RInfoDataItem value={RemoveHttp(props.website)} url={props.website} trusted={false} icon="language" /> : ''}
+                {props.instagram ? <RInfoDataItem value={props.instagram} imageIcon="/contents/assets/logos/ig-icon.png" trusted={true} url={TrustedURL("https://www.instagram.com/[]?ref=thidle.com", [props.instagram])} /> : ''}
             </div>
 
-            <div className="user-profile-right-info-observed-by-container">
+            {props.friendObservedCount > 0 ? <div className="user-profile-right-info-observed-by-container">
                 <div className="user-profile-right-info-observed-by-images">
-                    <div className="user-profile-right-info-observed-by"></div>
+                    {props.friendObservedUsers.map((item, index) => {
+                        return <div className="user-profile-right-info-observed-by" key={index}><img className="user-profile-right-info-observed-by-image" alt={`${item.name} Profile`} src={item.userImage} /></div>
+                    })}
                 </div>
                 <div className="user-profile-right-info-observed-by-text">Observed by {props.friendObservedCount} people you know</div>
-            </div>
+            </div> : ''}
         </div>
     )
 }
 function RInfoDataItem(props){
     return (
         <div className="user-profile-right-info-additional-data">
-            <span className="user-profile-right-info-additional-data-icon material-icons-round">{props.icon}</span>
-            <span className="user-profile-right-info-additional-data-text">{props.value}</span>
+            {props.imageIcon ? <span className="user-profile-right-info-additional-data-image-icon-container"><img className="user-profile-right-info-additional-data-image-icon" alt="Social Network Icon" src={props.imageIcon}/></span> : ''}
+            {props.icon ? <span className="user-profile-right-info-additional-data-icon material-icons-round">{props.icon}</span> : ''}
+            {props.url ?
+                (
+                    props.trusted ? 
+                    <a href={props.url} target="_blank" rel="noreferrer"><span className="user-profile-right-info-additional-data-text">{props.value}</span></a> :
+                    <UntrustedLink url={props.url}><span className="user-profile-right-info-additional-data-text">{props.value}</span></UntrustedLink>
+                ) : 
+                <span className="user-profile-right-info-additional-data-text">{props.value}</span>
+            }
         </div>
     )
 }

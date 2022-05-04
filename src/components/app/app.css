@@ -1087,7 +1087,7 @@ img.thidle-user-profile-image {width: 100%;height: 100%;}
 
 .thidle-user-profile-image-container {width: 170px;position: absolute;bottom: 0px;overflow: hidden;left: 20px;border-radius: 50%;height: 170px;border: 4px solid #011019;}
 
-.thidle-user-profile-main-info-container {position: relative;}
+.thidle-user-profile-main-info-container {position: relative; z-index: 2;}
 
 .thidle-user-profile-info-container {margin-left: 145px; margin-top: 10px;}
 
@@ -1099,7 +1099,7 @@ span.thidle-user-profile-observe-button-text {display: inline-block;font-family:
 
 button.thidle-user-profile-observe-button > span {vertical-align: middle}
 
-span.thidle-user-profile-name {display: block;color: white;font-family: 'Ubuntu';font-weight: 500;margin-left: 65px;font-size: 20px;}
+span.thidle-user-profile-name {display: block;color: white;font-family: 'Ubuntu';font-weight: 400;margin-left: 65px;font-size: 20px;}
 
 span.thidle-user-profile-username {margin-left: 58px;color: white;margin-top: 7px;display: block;font-family: 'Ubuntu';font-size: 14px;font-weight: 100;opacity: 0.30;}
 
@@ -1115,10 +1115,11 @@ span.thidle-user-profile-stat-text {font-weight: 200;margin-left: 4px;color: rgb
 .thidle-user-profile-main-info-background-container::before , .thidle-user-profile-main-info-background-container::after{
     content: '';
     position: absolute;
+    z-index: 1;
 }
 .thidle-user-profile-main-info-background-image-container::before {
     width: 100%;
-    height: 10px;
+    height: 15px;
     top: 0px;
     left: 0px;
     background: linear-gradient(to bottom, #011019, transparent);
@@ -1127,20 +1128,94 @@ span.thidle-user-profile-stat-text {font-weight: 200;margin-left: 4px;color: rgb
     bottom: 0px;
     left: 0px;
     width: 100%;
-    height: 10px;
+    height: 100px;
     background: linear-gradient(to top, #011019, transparent);
 }
 .thidle-user-profile-main-info-background-container::before{
     top: 0px;
     left: 0px;
     height: 100%;
-    width: 10px;
+    width: 15px;
     background: linear-gradient(to right, #011019, transparent);
 }
 .thidle-user-profile-main-info-background-container::after{
     top: 0px;
     right: 0px;
     height: 100%;
-    width: 10px;
+    width: 15px;
     background: linear-gradient(to left, #011019, transparent);
 }
+
+.user-profile-right-info-top {margin-top: 5px;}
+
+span.user-profile-since-text {color: rgba(255,255,255,0.2);font-family: 'Montserrat';font-size: 11px;font-weight: 100;}
+
+.user-profile-report-button {float: right;background-color: rgba(255,255,255, 0.05);width: 23px;height: 23px;border-radius: 50%;cursor: pointer;margin-top: -3px;transition: background-color 0.2s;}
+
+span.user-profile-report-button-icon.material-icons {font-size: 14px;text-align: center;display: block;line-height: 23px;color: white;}
+
+.user-profile-report-button:hover {background-color: rgb(255,255,255,0.25);}
+
+.user-profile-right-info-description-container {margin-top: 10px;font-family: 'Ubuntu';font-size: 13px;color: white;font-weight: 200;line-height: 20px;word-break: break-word;text-align: justify;}
+
+.user-profile-right-info-additional-data-container {margin-top: 10px;}
+
+.user-profile-right-info-additional-data:not(:last-child) {margin-bottom: 5px;}
+
+span.user-profile-right-info-additional-data-icon.material-icons-round {display: inline-block;vertical-align: middle;margin-right: 7px;color: rgb(255 255 255 / 50%);font-size: 15px;}
+
+span.user-profile-right-info-additional-data-text {display: inline-block;vertical-align: middle;font-family: 'Montserrat';color: rgb(255 255 255 / 50%);font-weight: 500;font-size: 11px;}
+
+span.user-profile-right-info-additional-data-image-icon-container {width: 15px;height: 15px;display: inline-block;margin-right: 7px;vertical-align: middle;}
+
+img.user-profile-right-info-additional-data-image-icon {width: 100%;opacity: 0.5;width: 13px;margin: 1px;}
+
+.user-profile-right-info-additional-data a span {color: #c55a11;}
+
+.user-profile-right-info-observed-by-text {display: inline-block;font-size: 10px;font-family: 'Montserrat';color: rgb(255 255 255 / 20%);vertical-align: middle;margin-top: -4px;}
+
+.user-profile-right-info-observed-by-container {margin-top: 12px;}
+
+.user-profile-right-info-container {margin-right: 10px;}
+
+.user-profile-right-info-observed-by {width: 22px;height: 22px;display: inline-block;overflow: hidden;border-radius: 50%;border: 2px solid #011019;}
+
+.user-profile-right-info-observed-by:not(:first-child){margin-left: -17px;}
+
+img.user-profile-right-info-observed-by-image {width: 100%;height: 100%;}
+
+.user-profile-right-info-observed-by-images {display: inline-block;vertical-align: middle;margin-right: 5px;}
+
+.user-profile-right-info-user-picture-container {width: 40px;height: 40px;overflow: hidden;border-radius: 50%;float: left;display: inline-block;margin-right: 13px;}
+
+img.user-profile-right-info-user-picture {width: 100%;}
+
+
+span.thidle-user-profile-name-right {display: block;
+    color: white;
+    font-family: 'Ubuntu';
+    font-weight: 400;
+    
+    font-size: 14px;margin-top: 4px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+
+span.thidle-user-profile-username-right {
+    color: white;
+    margin-top: 5px;
+    display: block;
+    font-family: 'Ubuntu';
+    font-size: 12px;
+    font-weight: 100;
+    opacity: 0.30;}
+.user-profile-right-info-user-container {overflow: hidden;visibility: visible;height: 0px;transition: height 0.2s, margin-bottom 0.2s;}
+
+.user-profile-right-info-user-container.active > div{
+    transition-delay: 0.2s;
+    opacity: 1;
+}
+
+.user-profile-right-info-user-container > div{
+    transition: opacity 0.2s;
+    opacity: 0;
+}
+
+.user-profile-right-info-user-container.active {height: 40px;margin-bottom: 15px;}
