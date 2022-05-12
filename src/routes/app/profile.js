@@ -3,62 +3,94 @@ import { FollowSuggestions, RightAdvertising } from "../../components/app/right-
 import { RightOptionsContainer, MainPostsContainer } from "../../components/app";
 import RightUserInfo from "../../components/app/profile";
 import { Thought } from "../../components/app/thoughts";
+import { useEffect, useState } from "react";
+import { HTTPRequest, ProfileURL } from "../../workers/commons";
+import { useLocation } from "react-router-dom";
+import ReactGA from 'react-ga';
+
+const profileInitial = {
+    userImage: {},
+    backgroundImage: {},
+    friendObserverdUsers: [],
+    name: '',
+    username: '',
+    observers: '',
+    observing: '',
+    thoughts: '',
+    creation: '',
+    country: '',
+    birthday: '',
+    gender: '',
+    website: '',
+    instagram: '',
+    friendObservedCount: 0,
+}
 
 export default function Profile(props){
+    const [profile, setProfile] = useState(profileInitial);
+    const [profileUsername, setProfileUsername] = useState("");
+    const [profileError, setProfileError] = useState(false);
+    const currentLocation = useLocation();
+
+    let paths = currentLocation.pathname.split('/');
+
+    useEffect(() => {
+        if(paths.length <= 4){
+            if(profileUsername !== paths[1]){
+                ReactGA.pageview(window.location.pathname + window.location.search);
+                setProfileUsername(paths[1]);
+                setProfileError(false);
+                setProfile(profileInitial);
+                HTTPRequest('GET', `/api/v0/profile/info?username=${encodeURIComponent(paths[1])}`).then(result => {
+                    if(result.success){
+                        document.title = `${result.data[0].name} (@${result.data[0].username}) - Thidle`;
+                        setProfile(result.data[0])
+                    } else {
+                        document.title = `Thidle - Not Found`;
+                        setProfileError(true);
+                    }
+                });
+            } else if(window.thidle?.profileStatus === 2){
+                setProfileError(true);
+            }
+        } else if(!profileError) setProfileError(true);
+    }, [paths, profileError, profileUsername])
+
     return (
         <MainAppContainer marginTop="60px">
-            <div className="thidle-user-profile-main-info-background-container">
+            <div className="thidle-user-profile-main-info-background-container" style={!profile.backgroundImage?.url ? {height: "100px", backgroundColor: "#0e1c25"} : {}}>
                 <div className="thidle-user-profile-main-info-background-image-container">
-                    <Parallax strenght={0.5} blur={4} className="thidle-user-profile-main-info-background-image" src={props.backgroundImage} alt={props.backgroundAlt}/>
+                    {profile.backgroundImage?.url ? <Parallax strenght={0.5} blur={4} className="thidle-user-profile-main-info-background-image" src={`https://thidle.com${profile.backgroundImage?.url}`} alt={profile.backgroundImage?.alt}/> : ''}
                 </div>
             </div>
             <RightOptionsContainer marginTop="5px">
-                <RightUserInfo 
-                    userImage={props.userImage}
-                    name={props.name}
-                    username={props.username}
-                    creation="2022-05-04"
-                    description="Se você acha que a vida tem sentido, não se engane, você deu sentido à ela."
-                    country="Brazil"
-                    displayBirthday={true}
-                    birthday="2001-04-20"
-                    gender="M"
-                    website="https://www.ezenere.com"
-                    instagram="edu_zenere"
-                    friendObservedCount={75}
-                    friendObservedUsers={[
-                        {name: "Isabella", username: "isabella", userImage: "https://pbs.twimg.com/profile_images/1366347406711881731/-wtv05qD_400x400.jpg"},
-                        {name: "myrella", username: "myrella", userImage: "https://pbs.twimg.com/profile_images/1521666869312344064/V0cm7nwe_400x400.jpg"},
-                        {name: "Guilherme com H Tigor T. Tigre", username: "guilherme", userImage: "https://pbs.twimg.com/profile_images/1362611619939971074/Apa1qP5o_400x400.jpg"},
-                        {name: "Felipe Zenere", username: "zevski", userImage: "https://pbs.twimg.com/profile_images/1376039440842420224/g3AHJ5IT_400x400.jpg"},
-                    ]}
-                />
+                <RightUserInfo {...profile}/>
                 <FollowSuggestions />
                 <RightAdvertising />
             </RightOptionsContainer>
             <MainContentContainer>
                 <div className="thidle-user-profile-main-info-container">
                     <div className="thidle-user-profile-image-container">
-                        <img className="thidle-user-profile-image" src={props.userImage} alt={`${props.name} Profile`}/>
+                        <img className="thidle-user-profile-image" src={ProfileURL(profile.userImage)} alt={`${profile.userImage?.alt ?? ''} Profile`}/>
                     </div>
                     <div className="thidle-user-profile-info-container">
                         <button className="thidle-user-profile-observe-button">
                             <span className="thidle-user-profile-observe-button-text">Observe</span>
                             <span className="thidle-user-profile-observe-button-icon material-icons-round">person_add</span>
                         </button>
-                        <span className="thidle-user-profile-name">{props.name}</span>
-                        <span className="thidle-user-profile-username">@{props.username}</span>
+                        <span className="thidle-user-profile-name">{profile.name}</span>
+                        <span className="thidle-user-profile-username">@{profile.username}</span>
                         <div className="thidle-user-profile-stats-container">
                             <div className="thidle-user-profile-stat">
-                                <span className="thidle-user-profile-stat-number">{props.observers}</span>
+                                <span className="thidle-user-profile-stat-number">{profile.observers}</span>
                                 <span className="thidle-user-profile-stat-text">Observers</span>
                             </div>
                             <div className="thidle-user-profile-stat">
-                                <span className="thidle-user-profile-stat-number">{props.observing}</span>
+                                <span className="thidle-user-profile-stat-number">{profile.observing}</span>
                                 <span className="thidle-user-profile-stat-text">Observing</span>
                             </div>
                             <div className="thidle-user-profile-stat">
-                                <span className="thidle-user-profile-stat-number">{props.thoughts}</span>
+                                <span className="thidle-user-profile-stat-number">{profile.thoughts}</span>
                                 <span className="thidle-user-profile-stat-text">Likes</span>
                             </div>
                         </div>

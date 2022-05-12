@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { Link, useResolvedPath, useMatch } from "react-router-dom";
 import { UserContext } from "../../contexts/user";
 import { useContext } from "react";
+import { ProfileURL } from "../../workers/commons";
 
 export default function Menu(){
     const userInfo = useContext(UserContext);
@@ -36,7 +37,7 @@ export default function Menu(){
                         </NewThoughtButtonContainer>
                         <LoggedUserMenu>
                             <LoggedUserImageContainer>
-                                <LoggedUserImage alt="Logged User Menu Image" src={userInfo.values.profile}/>
+                                <LoggedUserImage alt="Logged User Menu Image" src={ProfileURL(userInfo.values.userImage)}/>
                             </LoggedUserImageContainer>
                         </LoggedUserMenu>
                     </RightSizer>

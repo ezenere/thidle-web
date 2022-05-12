@@ -6,6 +6,7 @@ import SignUp from "./signup";
 export default function LoginApp(){
     useEffect(() => {
         document.body.classList.remove("app");
+        document.querySelector('.thidle-loading-screen').classList.add("disabled");
     });
     return (
         <Routes>

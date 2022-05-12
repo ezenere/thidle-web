@@ -1,28 +1,33 @@
 import ThidleThinkMiniPublication from "./mini-publication";
 import { RightInfoContent, RightUserInfo } from "./info-content";
 import { AdTestImage } from "..";
+import { useEffect, useState } from "react";
+import { HTTPRequest, ProfileURL } from "../../../workers/commons";
 
 export function FollowSuggestions(props){
+    const [suggestions, setSuggestions] = useState([]);
+    const [loaded, setLoaded] = useState(false);
+
+    useEffect(() => {
+        if(suggestions.length === 0 && !loaded){
+            HTTPRequest('GET', `/api/v0/thidle/suggestions`).then(result => {
+                setLoaded(true);
+                setSuggestions(result.data);
+            });
+        };
+    }, [suggestions, loaded])
+
     return (
         <RightInfoContent title="You might Know" moreLink="/follow-suggestions">
-            <RightUserInfo 
-                picture={'https://pbs.twimg.com/profile_images/1396628792177725443/RpYKScOu_400x400.jpg'}
-                name={'Leonardo'}
-                username={'leonardo'}
-                description={'Atacante Nato'}
-            />
-            <RightUserInfo 
-                picture={'https://pbs.twimg.com/profile_images/1362611619939971074/Apa1qP5o_400x400.jpg'}
-                name={'Guilherme Scroccaro'}
-                username={'guilherme'}
-                description={'Eu sou um personagem de um filme de comédia'}
-            />
-            <RightUserInfo 
-                picture={'https://scontent.fbfh17-1.fna.fbcdn.net/v/t1.6435-9/62012381_2093728100740127_3129459823523921920_n.jpg?_nc_cat=105&ccb=1-5&_nc_sid=09cbfe&_nc_ohc=hDYphsn9FmoAX-IP7L3&_nc_ht=scontent.fbfh17-1.fna&oh=00_AT_jMYN5hw660zM35kbS8f29I7quvfmiY9LpYQn-_eUO6g&oe=6296F77F'}
-                name={'Barbaa'}
-                username={'barbosa'}
-                description={'Cwb 💎'}
-            />
+            {suggestions.map(item => {
+                return <RightUserInfo 
+                    key={item.username}
+                    picture={ProfileURL(item.userImage)}
+                    name={item.name}
+                    username={item.username}
+                    description={item.description}
+                />
+            })}
         </RightInfoContent>
     )
 }

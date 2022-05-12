@@ -14,7 +14,7 @@ export function RightUserInfo(props){
                     <span className="app-large-user-info-name">{props.name}</span><span className="app-large-user-info-username">@{props.username}</span>
                 </div>
                 <div className="app-large-user-info-description-container">
-                    <span className="app-large-user-info-description">{props.description}</span>
+                    {props.description ? <span className="app-large-user-info-description">{props.description}</span> : ''}
                 </div>
             </div>
             <div className="app-large-user-info-add-outline-container">

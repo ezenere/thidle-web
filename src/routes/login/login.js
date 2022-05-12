@@ -4,6 +4,7 @@ import { ContentContainer, ContinueButton, MainWebsiteContainer, FormContainer, 
 import AlternativeButton from '../../components/login/altButton';
 import { Input } from '../../components/login/input';
 import Menu from '../../components/login/menu';
+import ReactGA from 'react-ga';
 
 export function Login(){
     const [username, setUsername] = useState('');
@@ -52,6 +53,7 @@ export function Login(){
     
     useEffect(() => {
         if(formVars.focusPassword && focus) document.forms['login-form'].elements['password'].focus();
+        ReactGA.pageview(window.location.pathname + window.location.search);
     })
 
     return (

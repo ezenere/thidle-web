@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { FullDate, MonthAndYear, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
-import { HomeTown } from "../../workers/profile"
+import { emojify, FullDate, MonthAndYear, ProfileURL, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
 
 export default function RightUserInfo(props){
     const [active, setActive] = useState(false);
@@ -18,31 +17,29 @@ export default function RightUserInfo(props){
         return () => th.removeEventListener('scroll', onScroll);
     });
 
-    console.log(active)
-
     return (
         <div className="user-profile-right-info-container">
             <div className={`user-profile-right-info-user-container${active ? ' active' : ''}`}>
                 <div className="user-profile-right-info-user-picture-container">
-                    <img className="user-profile-right-info-user-picture" alt="Current Profile" src={props.userImage}/>
+                    <img className="user-profile-right-info-user-picture" alt="Current Profile" src={ProfileURL(props.userImage)}/>
                 </div>
                 <div className="user-profile-right-info-user-info-container">
-                    <span class="thidle-user-profile-name-right">Eduardo Zenere</span>
-                    <span class="thidle-user-profile-username-right">@ezenere</span>
+                    <span className="thidle-user-profile-name-right">{emojify(props.name)}</span>
+                    <span className="thidle-user-profile-username-right">@{props.username}</span>
                 </div>
             </div>
 
             <div className="user-profile-right-info-top">
-                <span className="user-profile-since-text">Thinking since, {MonthAndYear(props.creation)}</span>
+                <span className="user-profile-since-text">Thinking since, {MonthAndYear(props.creation ?? '')}</span>
                 <div className="user-profile-report-button">
                     <span className="user-profile-report-button-icon material-icons">flag</span>
                 </div>
             </div>
             
-            <div className="user-profile-right-info-description-container">{props.description}</div>
+            <div className="user-profile-right-info-description-container">{emojify(props.description ?? '')}</div>
 
             <div className="user-profile-right-info-additional-data-container">
-                {props.country ? <RInfoDataItem value={HomeTown(props)} icon="house" /> : ''}
+                {props.hometown ? <RInfoDataItem value={props.hometown} icon="house" /> : ''}
                 {props.displayBirthday ? <RInfoDataItem value={FullDate(props.birthday)} icon="cake" /> : ''}
                 {props.gender !== "N" ? <RInfoDataItem value={{"M":"Male","F":"Female","T":"Transgender","O":"Other"}[props.gender]} icon={{"M":"male","F":"female","T":"transgender","O":"transgender"}[props.gender]} /> : ''}
                 {props.website ? <RInfoDataItem value={RemoveHttp(props.website)} url={props.website} trusted={false} icon="language" /> : ''}
@@ -51,11 +48,11 @@ export default function RightUserInfo(props){
 
             {props.friendObservedCount > 0 ? <div className="user-profile-right-info-observed-by-container">
                 <div className="user-profile-right-info-observed-by-images">
-                    {props.friendObservedUsers.map((item, index) => {
-                        return <div className="user-profile-right-info-observed-by" key={index}><img className="user-profile-right-info-observed-by-image" alt={`${item.name} Profile`} src={item.userImage} /></div>
+                    {props.friendObserversUsers.map((item, index) => {
+                        return <div className="user-profile-right-info-observed-by" key={item.username}><img className="user-profile-right-info-observed-by-image" alt={`${item.name} Profile`} src={ProfileURL(item.userImage)} /></div>
                     })}
                 </div>
-                <div className="user-profile-right-info-observed-by-text">Observed by {props.friendObservedCount} people you know</div>
+                <div className="user-profile-right-info-observed-by-text">Observed by {props.friendObservedCount} {parseInt(props.friendObservedCount) === 1 ? 'person' : 'people'} you know</div>
             </div> : ''}
         </div>
     )

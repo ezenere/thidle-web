@@ -4,6 +4,9 @@ import './components/app/app.css';
 import { BrowserRouter } from "react-router-dom"
 import LoginApp from './routes/login';
 import MainApp from './routes/app';
+import ReactGA from 'react-ga';
+
+ReactGA.initialize('G-ZCM1BYEMRS');
 
 function App() {
     return (
