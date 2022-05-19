@@ -26,9 +26,19 @@ export function RemoveHttp(url){
     return url.replace("http://", "").replace("https://", "")
 }
 
-export async function HTTPRequest(method, url, data = null){
+export async function HTTPRequest(method, url, data = null, needLogin = true){
+    if(!window.localStorage.thidleSession && needLogin) throw new Error('You must have a session to make a request');
+
+    let FD;
+    if(data){
+        FD = new FormData();
+        Object.entries(data).forEach(([k, v]) => {
+            FD.append(k, v);
+        })
+    }
+
     return new Promise(resolve => {
-        fetch(`https://thidle.com${url}`, {method})
+        fetch(`https://thidle.com${url}`, {method, body: data ? FD : undefined, headers: new Headers(needLogin ? {'Authorization': window.localStorage.thidleSession} : {})})
         .then((response)=>{return response.json()})
         .then((result)=>{
             resolve(result);
@@ -52,6 +62,21 @@ export function escapeHtml(unsafe)
 }
 
 export function emojify(text){
-    console.log(<div className="emoji-text-container" dangerouslySetInnerHTML={{__html: joypixels.toImage(escapeHtml(text))}}></div>);
     return (<span className="emoji-text-container" dangerouslySetInnerHTML={{__html: joypixels.toImage(escapeHtml(text))}}></span>);
+}
+
+export function getCookie(cname) {
+    let name = cname + "=";
+    let decodedCookie = decodeURIComponent(document.cookie);
+    let ca = decodedCookie.split(';');
+    for(let i = 0; i <ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) === ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) === 0) {
+        return c.substring(name.length, c.length);
+        }
+    }
+    return "";
 }

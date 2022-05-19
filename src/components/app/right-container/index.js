@@ -1,34 +1,42 @@
 import ThidleThinkMiniPublication from "./mini-publication";
 import { RightInfoContent, RightUserInfo } from "./info-content";
 import { AdTestImage } from "..";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { HTTPRequest, ProfileURL } from "../../../workers/commons";
+import { UserContext } from "../../../contexts/user";
+import { useLocation } from "react-router-dom";
 
 export function FollowSuggestions(props){
     const [suggestions, setSuggestions] = useState([]);
-    const [loaded, setLoaded] = useState(false);
+    const ctx = useContext(UserContext);
+    const [lastLocation, setLastLocation] = useState('');
+    const location = useLocation();
 
     useEffect(() => {
-        if(suggestions.length === 0 && !loaded){
-            HTTPRequest('GET', `/api/v0/thidle/suggestions`).then(result => {
-                setLoaded(true);
+        setLastLocation(location.pathname);
+        if(!ctx.rightSuggestions.loaded || location.pathname !== lastLocation){
+            HTTPRequest('GET', `/api/v0/thidle/suggestions?exclude=${location.pathname.split('/')[1]}`).then(result => {
+                ctx.rightSuggestions.update(true);
                 setSuggestions(result.data);
             });
         };
-    }, [suggestions, loaded])
+    }, [ctx, suggestions, lastLocation, location.pathname])
 
     return (
-        <RightInfoContent title="You might Know" moreLink="/follow-suggestions">
-            {suggestions.map(item => {
-                return <RightUserInfo 
-                    key={item.username}
-                    picture={ProfileURL(item.userImage)}
-                    name={item.name}
-                    username={item.username}
-                    description={item.description}
-                />
-            })}
-        </RightInfoContent>
+        <UserContext.Consumer>
+            {context => suggestions.length > 0 ? <RightInfoContent title="You might Know" moreLink="/follow-suggestions">
+                    {suggestions.map(item => {
+                        return <RightUserInfo 
+                            key={item.username}
+                            picture={ProfileURL(item.userImage)}
+                            name={item.name}
+                            username={item.username}
+                            description={item.description}
+                        />
+                    })}
+                </RightInfoContent> : ''
+            }
+        </UserContext.Consumer>
     )
 }
 

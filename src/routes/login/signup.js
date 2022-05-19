@@ -65,6 +65,7 @@ function FirstForm(props){
         .then((response)=>{return response.json();})
         .then((result)=>{
             if(result.success){
+                window.sessionStorage.signupSession = result.token;
                 props.setPosition(350);
                 props.setValues({...props.values, name: formValues.name, mail: formValues.mail});
             } else {
@@ -119,7 +120,7 @@ function SecondForm(props){
         let body = new FormData();
         body.append('confirm-code', confirm);
 
-        fetch("https://thidle.com/api/v0/login/create/confirm", {method: "POST", body})
+        fetch("https://thidle.com/api/v0/login/create/confirm", {method: "POST", body, headers: new Headers({'Authorization': window.sessionStorage.signupSession})})
         .then((response)=>{return response.json();})
         .then((result)=>{
             if(result.success){
@@ -200,7 +201,7 @@ function ThirdForm(props){
         }
 
         return new Promise(resolve => {
-            tOut = setTimeout(() => fetch("https://thidle.com/api/v0/login/create/checkUsername?username="+value)
+            tOut = setTimeout(() => fetch("https://thidle.com/api/v0/login/create/checkUsername?username="+value, {headers: new Headers({'Authorization': window.sessionStorage.signupSession})})
             .then((response)=>{return response.json();})
             .then((result)=>{
                 if(result.success) setUsernameStatus('Nome de usuário disponível')
@@ -214,7 +215,7 @@ function ThirdForm(props){
         event.preventDefault();
         event.stopPropagation();
         
-        if(!(await ValidateUsername(username) && ValidatePassword(password.first, password.second))) return;
+        if(!(await ValidateUsername(username, true) && ValidatePassword(password.first, password.second))) return;
 
         setFormError('');
         setFormDisabled(true);
@@ -224,10 +225,11 @@ function ThirdForm(props){
         body.append('password', password.first);
         body.append('re-password', password.second);
 
-        fetch("https://thidle.com/api/v0/login/create/finish", {method: "POST", body})
+        fetch("https://thidle.com/api/v0/login/create/finish", {method: "POST", body, headers: new Headers({'Authorization': window.sessionStorage.signupSession})})
         .then((response)=>{return response.json();})
         .then((result)=>{
             if(result.success){
+                window.localStorage.thidleSession = result.token;
                 window.location.href = result.redirect;
             } else {
                 setFormDisabled(false);

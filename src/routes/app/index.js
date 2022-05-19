@@ -5,11 +5,17 @@ import Feed from "./main";
 import Profile from "./profile";
 import { UserContext } from "../../contexts/user"
 import { HTTPRequest } from "../../workers/commons";
+import { ThoughtsContext } from "../../contexts/thoughts";
 
 
 export default function MainApp(){
     const [userInfoLoaded, setUserInfoLoaded] = useState(false);
     const [userInfoValues, setUserInfo] = useState({});
+    const [rightSuggestion, setRightSuggestion] = useState(false);
+
+    const updateRightSuggestions = (st) => {
+        setRightSuggestion(st);
+    }
 
     const setUserContext = (key, value) => {
         userInfoValues[key] = value;
@@ -27,11 +33,13 @@ export default function MainApp(){
         else getUserInfo();
     }, [userInfoLoaded, userInfoValues]);
 
-    return <UserContext.Provider value={{values: userInfoValues, set: setUserContext}}>
+    return <UserContext.Provider value={{values: userInfoValues, rightSuggestions: {loaded: rightSuggestion, update: updateRightSuggestions}, set: setUserContext}}>
         <Menu />
-        <Routes>
-            <Route path="/" element={<Feed />} />
-            <Route path="*" element={<Profile />} />
-        </Routes>
+        <ThoughtsContext>
+            <Routes>
+                <Route path="/" element={<Feed />} />
+                <Route path="*" element={<Profile />} />
+            </Routes>
+        </ThoughtsContext>
     </UserContext.Provider>
 }

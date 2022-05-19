@@ -5,6 +5,7 @@ import AlternativeButton from '../../components/login/altButton';
 import { Input } from '../../components/login/input';
 import Menu from '../../components/login/menu';
 import ReactGA from 'react-ga';
+import { HTTPRequest } from '../../workers/commons';
 
 export function Login(){
     const [username, setUsername] = useState('');
@@ -26,24 +27,17 @@ export function Login(){
         setformVars({...formVars, checking: true, error: '', focusPassword: false});
 
         if(formVars.checked){
-            let body = new FormData();
-            body.append("username", username);
-            body.append("password", password);
-            body.append("keep-logged", true);
-
-            fetch("https://thidle.com/api/v0/login/login", {method: "POST", body})
-            .then((response)=>{return response.json();})
-            .then((result)=>{
-                if(result.success) window.location.href = result.redirect;
-                else setformVars({error: result.error, checking: false, checked: true, focusPassword: true});
-            });
+            HTTPRequest('POST', "/api/v0/login/login", {username, password, "keep-logged": 'true'}, false).then(function(result){
+                if(result.success) {
+                    window.location.href = result.redirect;
+                    window.localStorage.thidleSession = result.token;
+                } else setformVars({error: result.error, checking: false, checked: true, focusPassword: true});
+            })
         } else {
             let body = new FormData();
             body.append("username", username);
 
-            fetch("https://thidle.com/api/v0/login/check", {method: "POST", body})
-            .then((response)=>{return response.json();})
-            .then((result)=>{
+            HTTPRequest('POST', "/api/v0/login/check", {username}, false).then(function(result){
                 if(result.success) {
                     setformVars({checked: true, checking: false, error: '', focusPassword: true});
                 } else setformVars({error: "Login Incorreto!", checking: false, checked: false, focusPassword: false});

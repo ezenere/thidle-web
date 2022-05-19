@@ -1091,15 +1091,19 @@ img.thidle-user-profile-image {width: 100%;height: 100%;}
 
 .thidle-user-profile-info-container {margin-left: 145px; margin-top: 10px; min-height: 85px;}
 
-button.thidle-user-profile-observe-button {float: right;border-radius: 25px;background-color: transparent;border: 1px solid #c55a11;color: #c55a11;padding: 0px;text-align: center;width: 125px;cursor: pointer; padding: 3px}
+button.thidle-user-profile-observe-button {float: right;border-radius: 25px;background-color: transparent;border: 1px solid #c55a11;color: #c55a11;padding: 0px;text-align: center;width: 125px;cursor: pointer; padding: 3px; /*transition: background-color 0.1s, color 0.1s, border-color 0.1s; position: relative*/}
 
-span.thidle-user-profile-observe-button-icon.material-icons-round {display: inline-block; margin-left: 7px; font-size: 21px}
+span.thidle-user-profile-observe-button-icon.material-icons-round {display: inline-block; margin-left: 7px; font-size: 21px; vertical-align: middle;}
 
-span.thidle-user-profile-observe-button-text {display: inline-block;font-family: 'Montserrat';font-weight: 300;}
+span.thidle-user-profile-observe-button-text {display: inline-block;font-family: 'Montserrat';font-weight: 300; vertical-align: middle;}
 
 button.thidle-user-profile-observe-button > span {vertical-align: middle}
 
-span.thidle-user-profile-name {display: block;color: white;font-family: 'Ubuntu';font-weight: 400;margin-left: 65px;font-size: 20px;}
+span.thidle-user-profile-name {display: block;color: white;font-family: 'Ubuntu';font-weight: 400;margin-left: 65px;font-size: 20px;
+    margin-right: 135px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;}
 
 span.thidle-user-profile-username {margin-left: 58px;color: white;margin-top: 7px;display: block;font-family: 'Ubuntu';font-size: 14px;font-weight: 100;opacity: 0.30;}
 
@@ -1232,4 +1236,34 @@ img.thidle-loading-screen-logo-image {width: 100%;height: 100%;}
     height: 1.5em;
     width: auto;
     vertical-align: middle;
+}
+
+
+button.thidle-user-profile-observe-button .thidle-user-profile-observe-button-stop-option{
+    display: none;
+}
+button.thidle-user-profile-observe-button .thidle-user-profile-observe-button-observing-option{
+    display: none;
+}
+
+button.thidle-user-profile-observe-button.active .thidle-user-profile-observe-button-observing-option{
+    display: block;
+}
+button.thidle-user-profile-observe-button.active .thidle-user-profile-observe-button-observe-option{
+    display: none;
+}
+button.thidle-user-profile-observe-button:not(.active):hover, button.thidle-user-profile-observe-button.active {
+    background-color: #c55a11;
+    color: white;
+}
+button.thidle-user-profile-observe-button.active:hover{
+    background-color: #a50a0a;
+    border-color: #a50a0a;
+}
+
+button.thidle-user-profile-observe-button.active:hover .thidle-user-profile-observe-button-stop-option{
+    display: block;
+}
+button.thidle-user-profile-observe-button.active:hover .thidle-user-profile-observe-button-observing-option{
+    display: none;
 }

@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
-import { emojify, FullDate, MonthAndYear, ProfileURL, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../contexts/user";
+import { emojify, FullDate, HTTPRequest, MonthAndYear, ProfileURL, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
 
 export default function RightUserInfo(props){
     const [active, setActive] = useState(false);
@@ -48,7 +49,7 @@ export default function RightUserInfo(props){
 
             {props.friendObservedCount > 0 ? <div className="user-profile-right-info-observed-by-container">
                 <div className="user-profile-right-info-observed-by-images">
-                    {props.friendObserversUsers.map((item, index) => {
+                    {props.friendObserversUsers.slice(0, 5).map((item, index) => {
                         return <div className="user-profile-right-info-observed-by" key={item.username}><img className="user-profile-right-info-observed-by-image" alt={`${item.name} Profile`} src={ProfileURL(item.userImage)} /></div>
                     })}
                 </div>
@@ -71,5 +72,38 @@ function RInfoDataItem(props){
                 <span className="user-profile-right-info-additional-data-text">{props.value}</span>
             }
         </div>
+    )
+}
+
+export function ObserveButton(props){
+    const [isLoading, setIsLoading] = useState(false);
+    const ctx = useContext(UserContext);
+
+    const updateFollowing = (e) => {
+        setIsLoading(true);
+        HTTPRequest('POST', `/api/v0/action/observe`, {username: props.username, observe: !props.observing ? '1' : '0'}).then(response => {
+            setIsLoading(false);
+            if(response.success) {
+                props.setObserving(response.data.observers, !props.observing);
+                ctx.rightSuggestions.update(false);
+            }
+        });
+    }
+
+    return (
+        <button className={`thidle-user-profile-observe-button${props.observing ? ' active' : ''}`} onClick={(e) => {updateFollowing(e)}} style={isLoading ? {opacity: 0.5, pointerEvents: 'none'} : {}}>
+            <div className="thidle-user-profile-observe-button-observe-option">
+                <span className="thidle-user-profile-observe-button-text">Observe</span>
+                <span className="thidle-user-profile-observe-button-icon material-icons-round">person_add</span>
+            </div>
+            <div className="thidle-user-profile-observe-button-observing-option">
+                <span className="thidle-user-profile-observe-button-text">Observing</span>
+                <span className="thidle-user-profile-observe-button-icon material-icons-round">done</span>
+            </div>
+            <div className="thidle-user-profile-observe-button-stop-option">
+                <span className="thidle-user-profile-observe-button-text">Unobserve</span>
+                <span className="thidle-user-profile-observe-button-icon material-icons-round">person_remove</span>
+            </div>
+        </button>
     )
 }

@@ -6,12 +6,13 @@ import LoginApp from './routes/login';
 import MainApp from './routes/app';
 import ReactGA from 'react-ga';
 
-ReactGA.initialize('G-ZCM1BYEMRS');
 
 function App() {
+    ReactGA.initialize('G-ZCM1BYEMRS');
+
     return (
         <BrowserRouter>
-            {window.thidle.loggedIn ? <MainApp/> : <LoginApp/>}
+            {window.localStorage.thidleSession ? <MainApp/> : <LoginApp/>}
         </BrowserRouter>
     )
 }
