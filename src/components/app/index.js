@@ -3,8 +3,8 @@ import styled from "styled-components";
 
 export function AdditionalOption(props){
     return (
-        <AdditionalOptionContainer isActive={props.isActive}>
-            <AdditionalOptionButton>
+        <AdditionalOptionContainer activeBackground={props.activeBackground} noSpacers={props.noSpacers ?? false} isActive={props.isActive}>
+            <AdditionalOptionButton style={props.style}>
                 {props.icon ? <AdditionalOptionIcon>{props.icon}</AdditionalOptionIcon> : ''}
                 {props.title ? <AdditionalOptionText>{props.title}</AdditionalOptionText> : ''}
             </AdditionalOptionButton>
@@ -64,7 +64,7 @@ export const OptionsContainer = styled.div`
     align-content: center;
     justify-content: center;
     align-items: center;
-    background-color: #0E1C25;
+    background-color: ${props => props.backgroundColor ?? '#0E1C25'};
     overflow: hidden;
     border-radius: 5px;
 `
@@ -78,11 +78,13 @@ const AdditionalOptionContainer = styled.div`
     padding-bottom: 7px;
     cursor: pointer;
     transition: color 0.2s, background-color 0.2s;
+    ${props => props.noSpacers ? '' : `
     :not(:last-child){
         border-right: 1px solid #033655;
     }
+    `}
     ${props => props.isActive ? `
-        background-color: #1A2830;
+        background-color: ${props.activeBackground ?? '#1A2830'};
         color: #C55A11;
     ` : `
         color: rgb(255 255 255 / 75%);

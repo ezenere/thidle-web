@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MainPostsContainer } from ".";
 import { useThoughts } from "../../contexts/thoughts";
-import { HTTPRequest, ProfileURL } from "../../workers/commons";
+import { HTTPRequest, navigateTo, ProfileURL, stopPropagation, thinkDateRead } from "../../workers/commons";
 
 export function Thoughts(props){
     const [thoughts, setThoughts] = useThoughts();
@@ -37,13 +38,13 @@ export function Thoughts(props){
                         privacy={thought.privacy}
                         date={thought.date}
                         text={thought.text}
-                        liked={thought.liked === '1'}
+                        liked={parseInt(thought.liked) === 1}
                         likes={thought.likeCount}
-                        reposted={thought.reposted === '1'}
+                        reposted={parseInt(thought.reposted) === 1}
                         reposts={thought.shareCount}
-                        commented={thought.commented === '1'}
+                        commented={parseInt(thought.commented) === 1}
                         comments={thought.commentCount}
-                        hasRethink={!(thought.hasMention === '0')}
+                        hasRethink={!(parseInt(thought.hasMention) === 0)}
                         rethink={thought.mention}
                         images={thought.images}
                         commentItems={thought.comments}
@@ -179,6 +180,7 @@ export function Thought(props){
     const [userLiked, setUserLiked] = useState(props.liked);
     const [likeCount, setLikeCount] = useState(props.likes);
     const [userLikedLoading, setUserLikedLoading] = useState(false);
+    const navigate = useNavigate();
 
     const updateLike = (e) => {
         if(!userLikedLoading){
@@ -195,27 +197,27 @@ export function Thought(props){
 
     return (
         <div className={`thidle-think-main-publication-container${props.isComment ? ' comment' : ''}${props.primary ? ' is-primary-comment' : ''}${props.hasContinuation ? ' has-continuation' : ''}${props.isSubcomment ? ' isSubcomment' : ''}`}>
-            <div className="thidle-think-primary-content-isolation">
+            <div className="thidle-think-primary-content-isolation" onMouseDown={stopPropagation} onClick={(e) => navigateTo(e, navigate, `/think/${props.id}`)}>
                 <div className="thidle-think-top-info-container">
                     <div className="thidle-think-user-picture-main-container">
-                        <div className="thidle-think-user-picture-container">
+                        <div className="thidle-think-user-picture-container" onMouseDown={stopPropagation} onClick={(e) => navigateTo(e, navigate, `/${props.username}`)}>
                             <img className="thidle-think-user-picture" alt={`${props.name} Profile`} src={props.picture}/>
                         </div>
                     </div>
                     <div className="thidle-think-user-info-main-container">
                         <div className="thidle-think-user-info-name-container">
-                            <span className="thidle-think-user-complete-info-container">
+                            <span className="thidle-think-user-complete-info-container" onMouseDown={stopPropagation} onClick={(e) => navigateTo(e, navigate, `/${props.username}`)}>
                                 <span className="thidle-think-user-info-name">{props.name}</span>
                                 <span className="thidle-think-user-info-username">@{props.username}</span>
                             </span>
                         </div>
                         <div className="thidle-think-info-container">
                             <span className="thidle-think-info-privacy">{{'P':'Public', 'S':'Selected People', 'F':'Friends Only', 'A':'Anonymous'}[props.privacy]}</span>
-                            <span className="thidle-think-info-date">{props.date}</span>
+                            <span className="thidle-think-info-date">{thinkDateRead(props.date)}</span>
                         </div>
                     </div>
                     <div className="thidle-think-options-main-container">
-                        <button className="thidle-think-options-button">
+                        <button className="thidle-think-options-button" onMouseDown={stopPropagation}>
                             <span className="thidle-think-options-icon material-icons">more_horiz</span>
                         </button>
                     </div>
@@ -227,13 +229,13 @@ export function Thought(props){
                 </div>
                 {!props.isRethink ?
                 <div className="thidle-think-options-container">
-                    <div className="thidle-think-options-right-box">
+                    <div className="thidle-think-options-right-box" onMouseDown={stopPropagation} onClick={stopPropagation}>
                         <div className="thidle-think-option-button">
                             <span className="thidle-think-option-button-icon active material-icons">share</span>
                         </div>
                     </div>
-                    <div className="thidle-think-options-left-box">
-                        <div className={`thidle-think-option-button material-icons${userLiked ? ' active' : ''}`}>
+                    <div className="thidle-think-options-left-box" onMouseDown={stopPropagation} onClick={stopPropagation}>
+                        <div className={`thidle-think-option-button material-icons${userLiked ? ' active' : ''}`} >
                             <span className="thidle-think-option-button-icon material-icons-round" style={userLikedLoading ? {pointerEvents: 'none', opacity: '0.5'} : {}} onClick={(e) => updateLike(e)}>favorite</span>
                             <span className="thidle-think-option-button-text">{likeCount}</span>
                         </div>
@@ -282,7 +284,7 @@ function ThoughtImages(props){
     for(let c = 0; c < props.images.length; c++) props.images[c].active = c === currentImage;
 
     return(
-        <div className="thidle-think-content-image-album-container">
+        <div className="thidle-think-content-image-album-container" onClick={stopPropagation} onMouseDown={stopPropagation}>
             <div className="thidle-think-content-image-album" ref={overflow}>
                 {props.images.map((image, index) => {
                     return (
@@ -309,16 +311,17 @@ function Rethink(props){
     return (
         <div className="thidle-rethink-content-container">
             <Thought name={props.name}
+            id={props.id}
             picture={ProfileURL(props.profilePicture)}
             username={props.username}
             privacy={props.privacy}
             date={props.date}
             text={props.text}
-            liked={props.liked ?? true}
+            liked={parseInt(props.liked) === 1}
             likes={props.likeCount}
-            reposted={props.reposted ?? true}
+            reposted={parseInt(props.reposted) === 1}
             reposts={props.shareCount}
-            commented={props.commented ?? true}
+            commented={parseInt(props.commented) === 1}
             comments={props.commentCount}
             hasRethink={false}
             commentItems={[]} 
@@ -343,11 +346,11 @@ function Comments(props){
                     privacy={comment.privacy}
                     date={comment.date}
                     text={comment.text}
-                    liked={comment.liked === '1'}
+                    liked={parseInt(comment.liked) === 1}
                     likes={comment.likeCount}
-                    reposted={comment.reposted === '1'}
+                    reposted={parseInt(comment.reposted) === 1}
                     reposts={comment.shareCount}
-                    commented={comment.commented === '1'}
+                    commented={parseInt(comment.commented) === 1}
                     comments={comment.commentCount}
                     hasRethink={!(comment.hasMention === '0')}
                     rethink={comment.mention}

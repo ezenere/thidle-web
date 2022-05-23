@@ -38,6 +38,12 @@ export default function MainApp(){
         <ThoughtsContext>
             <Routes>
                 <Route path="/" element={<Feed />} />
+                <Route path="/think/*" element={<div>Think</div>} />
+                <Route path="/notifications" element={<div>Notifications</div>} />
+                <Route path="/trending" element={<div>Trending</div>} />
+                <Route path="/discover" element={<div>Discover</div>} />
+                <Route path="/follow-suggestions" element={<div>Follow Suggestions</div>} />
+                <Route path="/messages" element={<div>Messages</div>} />
                 <Route path="*" element={<Profile />} />
             </Routes>
         </ThoughtsContext>

@@ -1,6 +1,7 @@
 import joypixels from "emoji-toolkit";
 
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Setpember', 'October', 'November', 'December'];
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function MonthAndYear(date){
     return date ? `${months[parseInt(date.split(" ")[0].split("-")[1])-1]}, ${date.split(" ")[0].split("-")[0]}` : '';
@@ -39,7 +40,12 @@ export async function HTTPRequest(method, url, data = null, needLogin = true){
 
     return new Promise(resolve => {
         fetch(`https://thidle.com${url}`, {method, body: data ? FD : undefined, headers: new Headers(needLogin ? {'Authorization': window.localStorage.thidleSession} : {})})
-        .then((response)=>{return response.json()})
+        .then((response)=>{
+            if(response.status === 403){
+                delete window.localStorage.thidleSession;
+                window.location.href = '/';
+            } else return response.json()
+        })
         .then((result)=>{
             resolve(result);
         });
@@ -79,4 +85,35 @@ export function getCookie(cname) {
         }
     }
     return "";
+}
+
+export const stopPropagation = (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+}
+
+export const navigateTo = (e, navigate, to) => {
+    console.log(to)
+    stopPropagation(e);
+    navigate(to);
+}
+
+export const thinkDateRead = (date) => {
+    const dtp = date.split(' ')
+    const dt = dtp[0].split('-')
+    const tm = dtp[1].split(':')
+
+    const cdt = new Date();
+    const cd = `${cdt.getFullYear()}-${`${cdt.getMonth()+1}`.padStart(2, '0')}-${`${cdt.getDate()}`.padStart(2, '0')}`
+    const ydt = new Date();
+    ydt.setDate(ydt.getDate()-1)
+    const yd = `${ydt.getFullYear()}-${`${ydt.getMonth()+1}`.padStart(2, '0')}-${`${ydt.getDate()}`.padStart(2, '0')}`
+
+    let str = '';
+
+    if(dtp === cd) str = 'Today'
+    else if(dtp === yd) str = 'Yesterday'
+    else str = `${shortMonths[parseInt(dt[1])-1]} ${dt[2]}${cdt.getFullYear() === parseInt(dt[0]) ? '' : `, ${dt[0]}`}`;
+
+    return `${str} at ${tm[0]}:${tm[1]}`;
 }
