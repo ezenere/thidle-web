@@ -1,11 +1,28 @@
 import styled from "styled-components";
 import { Link, useResolvedPath, useMatch } from "react-router-dom";
 import { UserContext } from "../../contexts/user";
-import { useContext } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { ProfileURL } from "../../workers/commons";
+import { useModals } from "../../contexts";
 
 export default function Menu(){
-    const userInfo = useContext(UserContext);
+    const userContext = useContext(UserContext);
+    const [userMenuDropdownActive, setUserMenuDropdownActive] = useState(false);
+    const userMenuDropdownRef = useRef();
+    const modals = useModals();
+
+    useEffect(() => {
+        const handler = (event)=>{
+            if(userMenuDropdownActive && userMenuDropdownRef.current && !userMenuDropdownRef.current.contains(event.target)){
+                setUserMenuDropdownActive(false);
+            };
+        };
+        
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    
+    }, [userMenuDropdownActive]);
+
 
     return (
         <FixedContainer>
@@ -35,10 +52,22 @@ export default function Menu(){
                                 <NewThoughtButtonIcon>history_edu</NewThoughtButtonIcon>
                             </NewThoughtButton>
                         </NewThoughtButtonContainer>
-                        <LoggedUserMenu>
-                            <LoggedUserImageContainer>
-                                <LoggedUserImage alt="Logged User Menu Image" src={ProfileURL(userInfo.values.userImage)}/>
+                        <LoggedUserMenu ref={userMenuDropdownRef}>
+                            <LoggedUserImageContainer onClick={() => setUserMenuDropdownActive(true)}>
+                                <LoggedUserImage alt="Logged User Menu Image" src={ProfileURL(userContext.values.userImage)}/>
                             </LoggedUserImageContainer>
+                            <LoggedUserMenuOptionsContainer isActive={userMenuDropdownActive}>
+                                <Link to={`/${userContext.values.username}`}>
+                                    <LoggedUserMenuOption onClick={() => setUserMenuDropdownActive(false)}>
+                                        <LoggedUserMenuOptionIcon>account_circle</LoggedUserMenuOptionIcon>
+                                        <LoggedUserMenuOptionText>Profile</LoggedUserMenuOptionText>
+                                    </LoggedUserMenuOption>
+                                </Link>
+                                <LoggedUserMenuOption onClick={() => {setUserMenuDropdownActive(false); modals.open('continue', {})}}>
+                                    <LoggedUserMenuOptionIcon>logout</LoggedUserMenuOptionIcon>
+                                    <LoggedUserMenuOptionText>Logout</LoggedUserMenuOptionText>
+                                </LoggedUserMenuOption>
+                            </LoggedUserMenuOptionsContainer>
                         </LoggedUserMenu>
                     </RightSizer>
                 </OptionsContainer>
@@ -62,10 +91,65 @@ function Anchor(props){
 function Logo(){
     return (
         <LogoContainer>
-            <LogoImage  alt="Thidle Menu Logo" src="/contents/assets/images/thidle24-wname.png"/>
+            <Link to="/"><LogoImage  alt="Thidle Menu Logo" src="/contents/assets/images/thidle24-wname.png"/></Link>
         </LogoContainer>
     )
 }
+
+const LoggedUserMenuOptionsContainer = styled.div`
+    z-index: 100;
+    position: absolute;
+    top: calc(100% + 15px);
+    width: 120px;
+    right: 0px;
+    background-color: #1a2830;
+    border-radius: 12px;
+    box-shadow: 0px 0px 25px black;
+    transition: top 0.2s, opacity 0.2s, visibility 0.2s;
+    ::before {
+        content: '';
+        position: absolute;
+        border-bottom: 8px solid #1a2830;
+        border-right: 8px solid transparent;
+        border-left: 8px solid transparent;
+        top: -8px;
+        right: 10px;
+    }
+    ${props => !props.isActive && `
+        top: 100%;
+        opacity: 0;
+        visibility: hidden;
+    `}
+`
+
+const LoggedUserMenuOption = styled.div`
+    padding: 10px 0px;
+    text-align: center;
+    transition: background-color 0.2s;
+    cursor: pointer;
+    :not(:first-child) {
+        border-top: 1px solid #033655;
+    }
+    :hover {
+        background-color: rgba(255,255,255,0.05);
+    }
+`
+
+const LoggedUserMenuOptionText = styled.span`
+    font-size: 12px;
+    vertical-align: middle;
+    padding-left: 10px;
+    font-family: 'Montserrat';
+    color: white;
+`
+
+const LoggedUserMenuOptionIcon = styled.span.attrs({
+    className: 'material-icons-round'
+})`
+    font-size: 17px;
+    color: white;
+    vertical-align: middle;
+`
 
 const FixedContainer = styled.div`
     position: fixed;
@@ -257,6 +341,7 @@ const NewThoughtButtonIcon = styled.span.attrs({
 
 const LoggedUserMenu = styled.div`
     flex: 0 0 auto;
+    position: relative;
 `
 
 const LoggedUserImageContainer = styled.div`
@@ -266,6 +351,7 @@ const LoggedUserImageContainer = styled.div`
     border: 1px solid white;
     overflow: hidden;
     border-radius: 50%;
+    cursor: pointer;
 `
 
 const LoggedUserImage = styled.img`

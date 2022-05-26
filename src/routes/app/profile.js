@@ -3,10 +3,11 @@ import { FollowSuggestions, RightAdvertising } from "../../components/app/right-
 import { RightOptionsContainer, MainPostsContainer } from "../../components/app";
 import RightUserInfo, { ObserveButton } from "../../components/app/profile";
 import { Thought } from "../../components/app/thoughts";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { HTTPRequest, ProfileURL } from "../../workers/commons";
 import { useLocation } from "react-router-dom";
 import ReactGA from 'react-ga';
+import { UserContext } from "../../contexts/user";
 
 const profileInitial = {
     userImage: {url: false},
@@ -33,6 +34,7 @@ export default function Profile(props){
     const [profileError, setProfileError] = useState(false);
     const [profileLoading, setProfileLoading] = useState(false);
     const currentLocation = useLocation();
+    const userInfo = useContext(UserContext);
 
     let paths = currentLocation.pathname.split('/');
 
@@ -83,7 +85,14 @@ export default function Profile(props){
                         <img className="thidle-user-profile-image" src={ProfileURL(profile.userImage)} alt={`${profile.userImage?.alt ?? ''} Profile`}/>
                     </div>
                     <div className="thidle-user-profile-info-container">
-                        <ObserveButton observing={parseInt(profile.isFollowing) === 1} setObserving={setObserving} username={profile.username} />
+                        {profile.username !== userInfo.values.username ?
+                            <ObserveButton observing={parseInt(profile.isFollowing) === 1} setObserving={setObserving} username={profile.username} /> :
+                            <button className={`thidle-user-profile-observe-button${props.observing ? ' active' : ''}`} onClick={(e) => {userInfo.profileEdit(e)}}>
+                                <div className="thidle-user-profile-observe-button-observe-option" style={{padding: '3px'}}>
+                                    <span className="thidle-user-profile-observe-button-text">Edit</span>
+                                </div>
+                            </button>
+                        }
                         <span className="thidle-user-profile-name">{profile.name}</span>
                         <span className="thidle-user-profile-username">@{profile.username}</span>
                         <div className="thidle-user-profile-stats-container">

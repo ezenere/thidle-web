@@ -6,6 +6,7 @@ import Profile from "./profile";
 import { UserContext } from "../../contexts/user"
 import { HTTPRequest } from "../../workers/commons";
 import { ThoughtsContext } from "../../contexts/thoughts";
+import { Modals, ModalsContext } from "../../contexts";
 
 
 export default function MainApp(){
@@ -33,19 +34,24 @@ export default function MainApp(){
         else getUserInfo();
     }, [userInfoLoaded, userInfoValues]);
 
-    return <UserContext.Provider value={{values: userInfoValues, rightSuggestions: {loaded: rightSuggestion, update: updateRightSuggestions}, set: setUserContext}}>
-        <Menu />
-        <ThoughtsContext>
-            <Routes>
-                <Route path="/" element={<Feed />} />
-                <Route path="/think/*" element={<div>Think</div>} />
-                <Route path="/notifications" element={<div>Notifications</div>} />
-                <Route path="/trending" element={<div>Trending</div>} />
-                <Route path="/discover" element={<div>Discover</div>} />
-                <Route path="/follow-suggestions" element={<div>Follow Suggestions</div>} />
-                <Route path="/messages" element={<div>Messages</div>} />
-                <Route path="*" element={<Profile />} />
-            </Routes>
-        </ThoughtsContext>
-    </UserContext.Provider>
+    return (
+        <ModalsContext>
+            <UserContext.Provider value={{values: userInfoValues, rightSuggestions: {loaded: rightSuggestion, update: updateRightSuggestions}, set: setUserContext}}>
+                <Menu />
+                <ThoughtsContext>
+                    <Routes>
+                        <Route path="/" element={<Feed />} />
+                        <Route path="/think/*" element={<div>Think</div>} />
+                        <Route path="/notifications" element={<div>Notifications</div>} />
+                        <Route path="/trending" element={<div>Trending</div>} />
+                        <Route path="/discover" element={<div>Discover</div>} />
+                        <Route path="/follow-suggestions" element={<div>Follow Suggestions</div>} />
+                        <Route path="/messages" element={<div>Messages</div>} />
+                        <Route path="*" element={<Profile />} />
+                    </Routes>
+                </ThoughtsContext>
+                <Modals />
+            </UserContext.Provider>
+        </ModalsContext>
+    )
 }
