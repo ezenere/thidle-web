@@ -6,7 +6,7 @@ import Profile from "./profile";
 import { UserContext } from "../../contexts/user"
 import { HTTPRequest } from "../../workers/commons";
 import { ThoughtsContext } from "../../contexts/thoughts";
-import { Modals, ModalsContext } from "../../contexts";
+import { Modals, ModalsContext } from "../../contexts/modals";
 
 
 export default function MainApp(){

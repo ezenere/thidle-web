@@ -117,3 +117,18 @@ export const thinkDateRead = (date) => {
 
     return `${str} at ${tm[0]}:${tm[1]}`;
 }
+
+export const doLogout = (modals) => {
+    modals.open('continue', {
+        title: "Logout", 
+        description: "Tem certeza de que você deseja realizar o logout da sua conta?", 
+        buttons: {continue: "Sair"},
+        continue: (close) => {
+            delete window.localStorage.thidleSession;
+            //TODO: Send logout to backend and invalidate token
+            close();
+            window.location.reload();
+        },
+        cancel: (close) => {close();}
+    })
+}

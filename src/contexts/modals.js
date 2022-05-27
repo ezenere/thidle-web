@@ -1,5 +1,4 @@
-import React, { useContext, useEffect, useReducer } from "react"
-import styled from "styled-components"
+import React, { useContext, useReducer } from "react"
 import { ModalContinue } from "../components/app/modals/continue";
 const ModalCtx = React.createContext([]);
 
@@ -45,16 +44,12 @@ export function Modals(){
     return (
         <ModalCtx.Consumer>
             {
-                ([modals]) => {
+                ([modals, modalFunc]) => {
                     return [
-                        modals.continue.active && <ModalContinue options={modals.continue.options} />,
+                        modals.continue.active && <ModalContinue options={modals.continue.options} modals={modalFunc} name="continue" />,
                     ]
                 }
             }
         </ModalCtx.Consumer>
     )
 }
-
-export const ModalBackgroudContainer = styled.div`
-    position: fixed;
-`

@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { Link, useResolvedPath, useMatch } from "react-router-dom";
 import { UserContext } from "../../contexts/user";
 import { useContext, useEffect, useRef, useState } from "react";
-import { ProfileURL } from "../../workers/commons";
-import { useModals } from "../../contexts";
+import { doLogout, ProfileURL } from "../../workers/commons";
+import { useModals } from "../../contexts/modals";
 
 export default function Menu(){
     const userContext = useContext(UserContext);
@@ -22,7 +22,6 @@ export default function Menu(){
         return () => document.removeEventListener("mousedown", handler);
     
     }, [userMenuDropdownActive]);
-
 
     return (
         <FixedContainer>
@@ -63,7 +62,7 @@ export default function Menu(){
                                         <LoggedUserMenuOptionText>Profile</LoggedUserMenuOptionText>
                                     </LoggedUserMenuOption>
                                 </Link>
-                                <LoggedUserMenuOption onClick={() => {setUserMenuDropdownActive(false); modals.open('continue', {})}}>
+                                <LoggedUserMenuOption onClick={() => {setUserMenuDropdownActive(false); doLogout(modals);}}>
                                     <LoggedUserMenuOptionIcon>logout</LoggedUserMenuOptionIcon>
                                     <LoggedUserMenuOptionText>Logout</LoggedUserMenuOptionText>
                                 </LoggedUserMenuOption>
