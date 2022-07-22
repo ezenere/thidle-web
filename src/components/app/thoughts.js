@@ -17,7 +17,12 @@ export function Thoughts(props){
             setThoughtsLoading(true);
             setThoughtsLocation(props.location);
             setThoughtsPage(thoughtsPage+1);
-            HTTPRequest('GET', `/api/v0/thidle/thoughts?page=${thoughtsPage}`).then(result => {
+            HTTPRequest('GET',
+                props.location === 'main' ?
+                `/api/v0/thidle/thoughts?page=${thoughtsPage}`
+                :
+                `/api/v0/profile/thoughts?user=${props.user}&page=${thoughtsPage}`
+            ).then(result => {
                 setThoughts(result.data);
                 setThoughtsLoading(false);
                 setThoughtsLoaded(true);
@@ -33,6 +38,7 @@ export function Thoughts(props){
                         key={thought.id}
                         id={thought.id}
                         name={thought.name}
+                        parent={thought.parent}
                         picture={ProfileURL(thought.profilePicture)}
                         username={thought.username}
                         privacy={thought.privacy}
@@ -40,10 +46,14 @@ export function Thoughts(props){
                         text={thought.text}
                         liked={parseInt(thought.liked) === 1}
                         likes={thought.likeCount}
+                        rethoughtName={thought.rethoughtName}
+                        rethoughtUsername={thought.rethoughtUsername}
                         reposted={parseInt(thought.reposted) === 1}
                         reposts={thought.shareCount}
                         commented={parseInt(thought.commented) === 1}
                         comments={thought.commentCount}
+                        quoted={parseInt(thought.quoted) === 1}
+                        quotes={thought.quoteCount}
                         hasRethink={!(parseInt(thought.hasMention) === 0)}
                         rethink={thought.mention}
                         images={thought.images}
@@ -53,127 +63,64 @@ export function Thoughts(props){
             })}
         </MainPostsContainer>
     )
-    /*<Thought 
-                name={'Eduardo Zenere'}
-                picture={'https://pbs.twimg.com/profile_images/1480770095391641604/zbiqroKJ_400x400.jpg'}
-                username={'ezenere'}
-                privacy={0}
-                date={'Thu, 12:00'}
-                text={'Rede social incrível essa!'}
-                liked={true}
-                likes={21398}
-                reposted={false}
-                reposts={9058}
-                commented={false}
-                comments={342}
-            />
-            <Thought 
-                name={'Eduardo Zenere'}
-                picture={'https://pbs.twimg.com/profile_images/1480770095391641604/zbiqroKJ_400x400.jpg'}
-                username={'ezenere'}
-                privacy={0}
-                date={'Thu, 12:00'}
-                text={'Teste com imagens!'}
-                liked={true}
-                likes={21398}
-                reposted={false}
-                reposts={9058}
-                commented={false}
-                comments={342}
-                images={[
-                    {alt: "", url: "/contents/assets/images/bg-image.jpg"},
-                    {alt: "", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Un_%C3%A9t%C3%A9_au_bois_de_Vincennes_%2848108771342%29.jpg/1920px-Un_%C3%A9t%C3%A9_au_bois_de_Vincennes_%2848108771342%29.jpg"},
-                    {alt: "", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Paris_raining_autumn_cityscape_%288252181936%29.jpg/1920px-Paris_raining_autumn_cityscape_%288252181936%29.jpg"},
-                    {alt: "", url: "https://images3.alphacoders.com/853/thumb-1920-85305.jpg"},
-                    {alt: "", url: "https://img.freepik.com/free-photo/modern-futuristic-sci-fi-background_35913-2152.jpg?size=626&ext=jpg"},
-                    {alt: "", url: "https://img.freepik.com/free-photo/abstract-grunge-decorative-relief-navy-blue-stucco-wall-textur-rough-colored-background_1258-28311.jpg?size=626&ext=jpg"},
-                    {alt: "", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Paris_vue_d%27ensemble_tour_Eiffel.jpg/1920px-Paris_vue_d%27ensemble_tour_Eiffel.jpg"},
-                    {alt: "", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Paris_Opera_full_frontal_architecture%2C_May_2009.jpg/1920px-Paris_Opera_full_frontal_architecture%2C_May_2009.jpg"},
-                    {alt: "", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Arcdetriomphe_2.jpg/1920px-Arcdetriomphe_2.jpg"},
-                    {alt: "", url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Louvre_Courtyard%2C_Looking_West.jpg/1920px-Louvre_Courtyard%2C_Looking_West.jpg"},
-                ]}
-            />
+}
 
-            
-            <Thought 
-                name={'Eduardo Zenere'}
-                picture={'https://pbs.twimg.com/profile_images/1480770095391641604/zbiqroKJ_400x400.jpg'}
-                username={'ezenere'}
-                privacy={0}
-                date={'Thu, 12:00'}
-                text={'Teste com imagens!'}
-                liked={true}
-                likes={21398}
-                reposted={false}
-                reposts={9058}
-                commented={false}
-                comments={342}
-                hasRethink={true}
-                rethink={{
-                    name: 'Eduardo Zenere',
-                    picture: 'https://pbs.twimg.com/profile_images/1480770095391641604/zbiqroKJ_400x400.jpg',
-                    username: 'ezenere',
-                    privacy: 0,
-                    date: 'Thu, 12:00',
-                    text: 'Teste com imagens!',
-                    liked: true,
-                    likes: 21398,
-                    reposted: false,
-                    reposts: 9058,
-                    commented: false,
-                    comments: 342
-                }}
-                commentItems={[
-                    {
-                        name: 'Eduardo Zenere',
-                        picture: 'https://pbs.twimg.com/profile_images/1480770095391641604/zbiqroKJ_400x400.jpg',
-                        username: 'ezenere',
-                        privacy: 0,
-                        date: 'Thu, 12:00',
-                        text: 'Teste com imagens!',
-                        liked: true,
-                        likes: 21398,
-                        reposted: false,
-                        reposts: 9058,
-                        commented: false,
-                        comments: 342,
-                        primary: true,
-                        isSubcomment: false
-                    },
-                    {
-                        name: 'Eduardo Zenere',
-                        picture: 'https://pbs.twimg.com/profile_images/1480770095391641604/zbiqroKJ_400x400.jpg',
-                        username: 'ezenere',
-                        privacy: 0,
-                        date: 'Thu, 12:00',
-                        text: 'Teste com imagens!',
-                        liked: true,
-                        likes: 21398,
-                        reposted: false,
-                        reposts: 9058,
-                        commented: false,
-                        comments: 342,
-                        primary: false,
-                        isSubcomment: true
-                    },
-                    {
-                        name: 'Eduardo Zenere',
-                        picture: 'https://pbs.twimg.com/profile_images/1480770095391641604/zbiqroKJ_400x400.jpg',
-                        username: 'ezenere',
-                        privacy: 0,
-                        date: 'Thu, 12:00',
-                        text: 'Teste com imagens!',
-                        liked: true,
-                        likes: 21398,
-                        reposted: false,
-                        reposts: 9058,
-                        commented: false,
-                        comments: 342,
-                        primary: true,
-                        isSubcomment: false
-                    }
-                ]}
-            />*/
+export function MainThoughts(props){
+    const [thoughts, setThoughts] = useThoughts();
+    const [thoughtsLoading, setThoughtsLoading] = useState(false);
+    const [thoughtsLoaded, setThoughtsLoaded] = useState(false);
+    const [thoughtsPage, setThoughtsPage] = useState(0);
+    const [thoughtsInit, setThoughtsInit] = useState(false);
+
+    useEffect(() => {
+        if(!thoughtsLoading && !thoughtsLoaded){
+            setThoughts([]);
+            setThoughtsLoading(true);
+            setThoughtsPage(thoughtsPage+1);
+            setThoughtsInit(true);
+            HTTPRequest('GET', 
+                `/api/v0/thidle/thought/main?page=${thoughtsPage}${!thoughtsInit ? '&init=true' : ''}`
+            ).then(result => {
+                setThoughts(result.data);
+                setThoughtsLoading(false);
+                setThoughtsLoaded(true);
+            });
+        }
+    }, [thoughts, setThoughts, thoughtsLoading, thoughtsLoaded, thoughtsPage, thoughtsInit]);
+
+    return (
+        <MainPostsContainer>
+            {thoughts.map(thought => {
+                return (
+                    <Thought 
+                        key={thought.id}
+                        id={thought.id}
+                        name={thought.name}
+                        parent={thought.parent}
+                        picture={ProfileURL(thought.profilePicture)}
+                        username={thought.username}
+                        privacy={thought.privacy}
+                        date={thought.date}
+                        text={thought.text}
+                        liked={parseInt(thought.liked) === 1}
+                        likes={thought.likeCount}
+                        rethoughtName={thought.rethoughtName}
+                        rethoughtUsername={thought.rethoughtUsername}
+                        reposted={parseInt(thought.reposted) === 1}
+                        reposts={thought.shareCount}
+                        commented={parseInt(thought.commented) === 1}
+                        comments={thought.commentCount}
+                        quoted={parseInt(thought.quoted) === 1}
+                        quotes={thought.quoteCount}
+                        hasRethink={!(parseInt(thought.hasMention) === 0)}
+                        rethink={thought.mention}
+                        images={thought.images}
+                        commentItems={thought.comments}
+                    />
+                );
+            })}
+        </MainPostsContainer>
+    )
 }
 
 export function Thought(props){
@@ -216,6 +163,12 @@ export function Thought(props){
                             <span className="thidle-think-info-date">{thinkDateRead(props.date)}</span>
                         </div>
                     </div>
+                    {(props.rethoughtName !== null && typeof props.rethoughtName !== 'undefined') &&
+                    <div className="thidle-think-info-reposted-indicator">
+                        <span className="thidle-think-info-reposted-indicator-icon material-icons-round">repeat</span>
+                        <span>&nbsp;by&nbsp;</span>
+                        <span className="thidle-think-info-reposted-indicator-username">{props.rethoughtName}</span>
+                    </div>}
                     <div className="thidle-think-options-main-container">
                         <button className="thidle-think-options-button" onMouseDown={stopPropagation}>
                             <span className="thidle-think-options-icon material-icons">more_horiz</span>
@@ -230,6 +183,10 @@ export function Thought(props){
                 {!props.isRethink ?
                 <div className="thidle-think-options-container">
                     <div className="thidle-think-options-right-box" onMouseDown={stopPropagation} onClick={stopPropagation}>
+                        <div className={`thidle-think-option-button material-icons${props.quoted ? ' active' : ''}`}>
+                            <span className="thidle-think-option-button-icon material-icons-round">format_quote</span>
+                            <span className="thidle-think-option-button-text">{props.quotes}</span>
+                        </div>
                         <div className="thidle-think-option-button">
                             <span className="thidle-think-option-button-icon active material-icons">share</span>
                         </div>
@@ -312,6 +269,7 @@ function Rethink(props){
         <div className="thidle-rethink-content-container">
             <Thought name={props.name}
             id={props.id}
+            parent={props.parent}
             picture={ProfileURL(props.profilePicture)}
             username={props.username}
             privacy={props.privacy}
@@ -323,6 +281,8 @@ function Rethink(props){
             reposts={props.shareCount}
             commented={parseInt(props.commented) === 1}
             comments={props.commentCount}
+            quoted={parseInt(props.quoted) === 1}
+            quotes={props.quoteCount}
             hasRethink={false}
             commentItems={[]} 
             isRethink={true} />
@@ -352,6 +312,8 @@ function Comments(props){
                     reposts={comment.shareCount}
                     commented={parseInt(comment.commented) === 1}
                     comments={comment.commentCount}
+                    quoted={parseInt(comment.quoted) === 1}
+                    quotes={comment.quoteCount}
                     hasRethink={!(comment.hasMention === '0')}
                     rethink={comment.mention}
                     images={comment.images}

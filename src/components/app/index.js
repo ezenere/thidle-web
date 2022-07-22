@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 export function AdditionalOption(props){
     return (
-        <AdditionalOptionContainer activeBackground={props.activeBackground} noSpacers={props.noSpacers ?? false} isActive={props.isActive}>
+        <AdditionalOptionContainer activeBackground={props.activeBackground} noSpacers={props.noSpacers ?? false} isActive={props.isActive} onClick={props.onClick}>
             <AdditionalOptionButton style={props.style}>
                 {props.icon ? <AdditionalOptionIcon>{props.icon}</AdditionalOptionIcon> : ''}
                 {props.title ? <AdditionalOptionText>{props.title}</AdditionalOptionText> : ''}

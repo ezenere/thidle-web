@@ -1,9 +1,14 @@
 import React, { useContext, useReducer } from "react"
+import { ModalAlert } from "../components/app/modals/alert";
 import { ModalContinue } from "../components/app/modals/continue";
 const ModalCtx = React.createContext([]);
 
 const mainModals = {
     continue: {
+        active: false,
+        options: null
+    },
+    alert: {
         active: false,
         options: null
     }
@@ -47,6 +52,7 @@ export function Modals(){
                 ([modals, modalFunc]) => {
                     return [
                         modals.continue.active && <ModalContinue options={modals.continue.options} modals={modalFunc} name="continue" />,
+                        modals.alert.active && <ModalAlert options={modals.alert.options} modals={modalFunc} name="alert" />,
                     ]
                 }
             }

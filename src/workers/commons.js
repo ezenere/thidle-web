@@ -1,4 +1,5 @@
 import joypixels from "emoji-toolkit";
+import { useModals } from "../contexts/modals";
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -19,8 +20,29 @@ export function TrustedURL(url, insert){
     }, url)
 }
 
+export function asyncFor(iterable, callback, endCallback, currentIndex = 0){
+    if(typeof iterable[currentIndex] !== 'undefined'){
+        callback(iterable[currentIndex], iterable, currentIndex, () => {
+            asyncFor(iterable, callback, endCallback, currentIndex+1);
+        });
+    } else endCallback();
+}
+
 export function UntrustedLink(props){
-    return <a href={`https://thidle.com/redirect?to=${encodeURIComponent(props.url)}&ref=thidle.com`} className={props.className} target="_blank" rel="noreferrer">{props.children}</a>
+    const modals = useModals()
+    return <a onClick={(e) => {
+        e.preventDefault();
+        modals.open('continue', {
+            title: "Link Externo", 
+            description: "O link que você está tentando acessar não pertence ao Thidle. Não nos responsabilizamos por quaisquer consequencias que possam ocorrer ao acessar este site. Tem certeza de que deseja continuar?", 
+            buttons: {continue: "Acessar Link"},
+            continue: (close) => {
+                window.open(`${props.url}${props.url.indexOf('?') === -1 ? '?' : '&'}ref=thidle.com`, "_blank");
+                close();
+            },
+            cancel: (close) => {close();}
+        })
+    }} href={`${props.url}${props.url.indexOf('?') === -1 ? '?' : '&'}ref=thidle.com`} className={props.className} target="_blank" rel="noreferrer">{props.children}</a>
 }
 
 export function RemoveHttp(url){
