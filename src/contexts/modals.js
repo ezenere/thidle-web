@@ -1,6 +1,7 @@
 import React, { useContext, useReducer } from "react"
 import { ModalAlert } from "../components/app/modals/alert";
 import { ModalContinue } from "../components/app/modals/continue";
+import { ModalEditProfile } from "../components/app/modals/edit-profile";
 const ModalCtx = React.createContext([]);
 
 const mainModals = {
@@ -9,6 +10,10 @@ const mainModals = {
         options: null
     },
     alert: {
+        active: false,
+        options: null
+    },
+    editProfile: {
         active: false,
         options: null
     }
@@ -53,6 +58,7 @@ export function Modals(){
                     return [
                         modals.continue.active && <ModalContinue options={modals.continue.options} modals={modalFunc} name="continue" />,
                         modals.alert.active && <ModalAlert options={modals.alert.options} modals={modalFunc} name="alert" />,
+                        modals.editProfile.active && <ModalEditProfile options={modals.editProfile.options} modals={modalFunc} name="editProfile" />,
                     ]
                 }
             }

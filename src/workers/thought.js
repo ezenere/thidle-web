@@ -13,6 +13,7 @@ export class ThoughtCreator {
         this.privacy = privacy;
         this.commentPrivacy = commentPrivacy;
         this.date = date;
+        this.id = null;
 
         this.uploadedFiles = []
 
@@ -22,9 +23,17 @@ export class ThoughtCreator {
 
     create(){
         const _self = this;
-        HTTPRequest("POST", "/api/v0/action/create/thought/initialize").then((result) => {
-            if(result.success) _self.upload();
-            else _self.handleError(result);
+        HTTPRequest("POST", "/v0/thought", {
+            "text": this.text,
+            "privacy": this.privacy,
+            "commentPrivacy": this.commentPrivacy,
+            "parent": this.parent,
+            "embeed": null
+        }).then((result) => {
+            if(result.status === 201) {
+                _self.id = result.data.id;
+                _self.upload();
+            } else _self.handleError(result);
         });
     }
 
@@ -46,16 +55,7 @@ export class ThoughtCreator {
 
     finish(){
         const _self = this;
-        HTTPRequest("POST", "/api/v0/action/create/thought/finish", {
-            text: this.text,
-            audio: this.audio,
-            survey: this.survey,
-            gif: this.gif,
-            parent: this.parent,
-            privacy: this.privacy,
-            commentPrivacy: this.commentPrivacy,
-            date: this.date,
-        }).then((result) => {
+        HTTPRequest("PUT", `/v0/thought/${this.id}`).then((result) => {
             console.log(result)
             _self.endCallback();
         });

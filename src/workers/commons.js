@@ -1,5 +1,8 @@
 import joypixels from "emoji-toolkit";
 import { useModals } from "../contexts/modals";
+import { DecryptToken, RemoveTokens, SetTokens } from "./auth";
+
+const apiUrl = "http://localhost:3000" //"https://api.thidle.com/";
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -12,6 +15,14 @@ export function FullDate(date, full = true, locale = "br"){
     let d = date.split('-');
 
     return locale === "br" ? `${d[2]} de ${months[parseInt(d[1])-1]}${full ? (' de '+d[0]) : ''}` : `${months[d[1]]} ${d[2]}${full ? (', '+d[0]) : ''}`
+}
+
+export function BirthdayDate(date, locale = "br"){
+    let d = date.split('-').reverse();
+
+    return locale === "br" ? 
+        `${d[0]} de ${months[parseInt(d[1])-1]}${d.length === 3 ? (' de '+d[2]) : ''}` : 
+        `${months[parseInt(d[1])-1]} ${d[0]}${d.length === 3 ? (', '+d[2]) : ''}`
 }
 
 export function TrustedURL(url, insert){
@@ -49,33 +60,101 @@ export function RemoveHttp(url){
     return url.replace("http://", "").replace("https://", "")
 }
 
-export async function HTTPRequest(method, url, data = null, needLogin = true){
-    if(!window.localStorage.thidleSession && needLogin) throw new Error('You must have a session to make a request');
 
-    let FD;
-    if(data){
-        FD = new FormData();
-        Object.entries(data).forEach(([k, v]) => {
-            FD.append(k, v);
-        })
+const httpRequestStatus = {
+    pending: [],
+    refreshing: false
+}
+export async function HTTPRequest(method, url = null, data = null, needLogin = true){
+    if(!url) {
+        url = method;
+        method = 'GET';
     }
 
-    return new Promise(resolve => {
-        fetch(`https://thidle.com${url}`, {method, body: data ? FD : undefined, headers: new Headers(needLogin ? {'Authorization': window.localStorage.thidleSession} : {})})
-        .then((response)=>{
-            if(response.status === 403){
-                delete window.localStorage.thidleSession;
-                window.location.href = '/';
-            } else return response.json()
-        })
-        .then((result)=>{
+    method = method.toUpperCase();
+
+    if(data !== null && typeof data === 'object'){
+        const keys = Object.keys(data);
+        if(!keys.includes('query') && !keys.includes('body')){
+            if(['POST', 'PATCH', 'PUT'].includes(method)) data = {query: null, body: data}
+            if(['GET', 'DELETE', 'OPTIONS', 'HEAD', 'TRACE', 'CONNECT'].includes(method)) data = {query: data, body: null}
+        }
+    }
+
+    if(!data) data = {query: null, body: null}
+    if(typeof data.query === 'undefined') data.query = null;
+    if(typeof data.body === 'undefined') data.body = null;
+
+    try { 
+        const result = await TryRequest(method, url, data.query, data.body, needLogin);
+        return result;
+    } catch(err){
+        if(await RevalidateToken()) HTTPRequest(method, url, data, needLogin);
+        //else window.location.href = "/";
+    }
+}
+
+async function TryRequest(method, url, query, body, needLogin){
+    if(!window.localStorage.getItem('t') && needLogin) throw new Error('You must have a session to make a request');
+    return new Promise((resolve, reject) => {
+        fetch(`${apiUrl}${url}${query ? Object.entries(query).reduce((final, [key, value]) => (final + `${encodeURIComponent(key)}=${encodeURIComponent(value)}`), '?') : ''}`, {
+            method, 
+            body: body ? (body instanceof FormData ? body : JSON.stringify(body)) : undefined, 
+            headers: 
+                body instanceof FormData 
+                    ? new Headers(needLogin ? {'Authorization': `Bearer ${window.localStorage.getItem('t')}`} : {})
+                    : new Headers(needLogin ? {'Authorization': `Bearer ${window.localStorage.getItem('t')}`, "Content-Type": "application/json"} : {"Content-Type": "application/json"})
+        }).then(async (response) => {
+            if(response.status === 403) reject("Token Expired");
+            else return {
+                success: response.status.toString().substring(0, 1) === '2', 
+                status: response.status,
+                data: await response.json()
+            };
+        }).then((result) => {
             resolve(result);
         });
     })
-};
+}
+
+async function RevalidateToken(){
+    if(!httpRequestStatus.refreshing) {
+        httpRequestStatus.refreshing = true;
+        new Promise(async (resolve) => {
+            fetch(`${apiUrl}/auth/revalidate`, {
+                method: 'POST',
+                headers: new Headers({
+                    Authorization: ['Bearer', (await DecryptToken(window.localStorage.getItem('r')))].join(' ')
+                })
+            }).then(async result => {
+                if(result.status.toString().startsWith('2')) {
+                    const keys = await result.json();
+
+                    await SetTokens(keys);
+
+                    httpRequestStatus.pending.forEach((i) => {
+                        i();
+                    });
+                    httpRequestStatus.pending = [];
+                    httpRequestStatus.refreshing = false;
+
+                    resolve(true);
+                } else {
+                    RemoveTokens();
+
+                    resolve(false);
+                }
+            })
+        })
+    } else {
+        return new Promise((resolve) => {
+            httpRequestStatus.pending.push(() => { resolve(true); });
+        });
+    }
+}
 
 export function ProfileURL(profileImage){
-    return profileImage?.url ? `https://thidle.com${profileImage.url}` : 'https://thidle.com/contents/assets/images/profile/picture8.png';
+    return profileImage?.url || 'https://thidle.com/contents/assets/images/profile/picture8.png';
 }
 
 export function escapeHtml(unsafe)
@@ -144,13 +223,22 @@ export const doLogout = (modals) => {
     modals.open('continue', {
         title: "Logout", 
         description: "Tem certeza de que você deseja realizar o logout da sua conta?", 
-        buttons: {continue: "Sair"},
-        continue: (close) => {
-            delete window.localStorage.thidleSession;
-            //TODO: Send logout to backend and invalidate token
+        buttons: { continue: "Sair" },
+        continue: async (close) => {
             close();
-            window.location.reload();
+            LoadingOverlay(true);
+            await HTTPRequest('PATCH', '/v0/auth/login', {r: window.localStorage.getItem('r')});
+            RemoveTokens();
+            window.location.href = "/";
         },
         cancel: (close) => {close();}
     })
+}
+
+export function LoadingOverlay(active = true){
+    const overlay = document.querySelector('.thidle-loading-screen')
+    if(
+        (overlay.classList.contains("disabled") && active) ||
+        (!overlay.classList.contains("disabled") && !active)
+    ) overlay.classList[active ? 'remove' : 'add']("disabled")
 }

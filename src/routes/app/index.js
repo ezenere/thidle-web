@@ -4,15 +4,16 @@ import Menu from "../../components/app/menu";
 import Feed from "./main";
 import Profile from "./profile";
 import { UserContext } from "../../contexts/user"
-import { HTTPRequest } from "../../workers/commons";
+import { HTTPRequest, LoadingOverlay } from "../../workers/commons";
 import { ThoughtsContext } from "../../contexts/thoughts";
-import { Modals, ModalsContext } from "../../contexts/modals";
+import { Modals, useModals } from "../../contexts/modals";
 
 
 export default function MainApp(){
     const [userInfoLoaded, setUserInfoLoaded] = useState(false);
     const [userInfoValues, setUserInfo] = useState({});
     const [rightSuggestion, setRightSuggestion] = useState(false);
+    const modals = useModals();
 
     const updateRightSuggestions = (st) => {
         setRightSuggestion(st);
@@ -24,34 +25,39 @@ export default function MainApp(){
     }
     
     const getUserInfo = async () => {
-        setUserInfo((await HTTPRequest('GET', '/api/v0/profile/mine')).data);
+        setUserInfo((await HTTPRequest('GET', '/v0/user/info')).data);
         setUserInfoLoaded(true);
     };
+
+    const editUserProfile = (e) => {
+        modals.open('editProfile', {
+            cancel: (close) => close(),
+            continue: (close) => close()
+        });
+    }
     
     useEffect(() => {
         document.body.classList.add("app");
-        if(userInfoLoaded) document.querySelector('.thidle-loading-screen').classList.add("disabled");
+        if(userInfoLoaded) LoadingOverlay(false);
         else getUserInfo();
     }, [userInfoLoaded, userInfoValues]);
 
     return (
-        <ModalsContext>
-            <UserContext.Provider value={{values: userInfoValues, rightSuggestions: {loaded: rightSuggestion, update: updateRightSuggestions}, set: setUserContext}}>
-                <Menu />
-                <ThoughtsContext>
-                    <Routes>
-                        <Route path="/" element={<Feed />} />
-                        <Route path="/think/*" element={<div>Think</div>} />
-                        <Route path="/notifications" element={<div>Notifications</div>} />
-                        <Route path="/trending" element={<div>Trending</div>} />
-                        <Route path="/discover" element={<div>Discover</div>} />
-                        <Route path="/follow-suggestions" element={<div>Follow Suggestions</div>} />
-                        <Route path="/messages" element={<div>Messages</div>} />
-                        <Route path="*" element={<Profile />} />
-                    </Routes>
-                </ThoughtsContext>
-                <Modals />
-            </UserContext.Provider>
-        </ModalsContext>
+        <UserContext.Provider value={{profileEdit: editUserProfile, values: userInfoValues, rightSuggestions: {loaded: rightSuggestion, update: updateRightSuggestions}, set: setUserContext}}>
+            <Menu />
+            <ThoughtsContext>
+                <Routes>
+                    <Route path="/" element={<Feed />} />
+                    <Route path="/think/*" element={<div>Think</div>} />
+                    <Route path="/notifications" element={<div>Notifications</div>} />
+                    <Route path="/trending" element={<div>Trending</div>} />
+                    <Route path="/discover" element={<div>Discover</div>} />
+                    <Route path="/follow-suggestions" element={<div>Follow Suggestions</div>} />
+                    <Route path="/messages" element={<div>Messages</div>} />
+                    <Route path="*" element={<Profile />} />
+                </Routes>
+            </ThoughtsContext>
+            <Modals />
+        </UserContext.Provider>
     )
 }

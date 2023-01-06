@@ -4,8 +4,7 @@ export class Uploader{
     file = null;
     total = 0;
     sent = 0;
-    id = null;
-    hash = null;
+    key = null;
     endCallbackHolder = null;
     errorCallbackHolder = null;
     errors = 0;
@@ -17,17 +16,19 @@ export class Uploader{
     }
 
     upload(endCallback, errorCallback){
+        console.log(this.file)
         const _self = this;
 
         this.endCallbackHolder = endCallback;
         this.errorCallbackHolder = errorCallback;
 
-        HTTPRequest("POST", "/api/v0/upload/start", {
-            "name": this.file.name
+        HTTPRequest("POST", "/v0/upload", {
+            "name": this.file.name,
+            "type": this.file.type,
+            "size": this.file.size,
         }).then((result) => {
             if(result.success){
-                _self.id = result.id;
-                _self.hash = result.hash;
+                _self.key = result.data.key;
                 _self.stream();
             } else _self.handleError(result.errno, result.error);
         });
@@ -37,11 +38,9 @@ export class Uploader{
         let _self = this;
         console.log('stream')
 
-        HTTPRequest("POST", "/api/v0/upload/upload", {
-            id: _self.id,
-            hash: _self.hash,
-            file: this.file.slice(this.sent, this.sent+this.chunkLength)
-        }).then((result) => {
+        const fd = new FormData();
+        fd.append('chunk', this.file.slice(this.sent, this.sent+this.chunkLength));
+        HTTPRequest("POST", `/v0/upload/${this.key}`, fd).then((result) => {
             if(result.success){
                 _self.sent += _self.chunkLength;
 
@@ -72,10 +71,7 @@ export class Uploader{
 
     finish(){
         const _self = this;
-        HTTPRequest("POST", "/api/v0/upload/finish", {
-            id: _self.id,
-            hash: _self.hash
-        }).then((result) => {
+        HTTPRequest("PUT", `/v0/upload/${this.key}`).then((result) => {
             if(result.success){
                 if(typeof _self.endCallbackHolder == "function") _self.endCallbackHolder();
             } else _self.handleError(result.errno, result.error);

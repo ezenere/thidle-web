@@ -80,9 +80,9 @@ function Anchor(props){
     let match = useMatch({ path: resolved.pathname, end: true });
 
     return (
-        <AnchorContainer isActive={match ? true : false} to={props.to}>
-            <AnchorIcon isActive={match ? true : false}>{props.icon}</AnchorIcon>
-            <AnchorText isActive={match ? true : false}>{props.title}</AnchorText>
+        <AnchorContainer isActive={match ? true : undefined} to={props.to}>
+            <AnchorIcon isActive={match ? true : undefined}>{props.icon}</AnchorIcon>
+            <AnchorText isActive={match ? true : undefined}>{props.title}</AnchorText>
         </AnchorContainer>
     )
 }

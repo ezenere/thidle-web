@@ -3,15 +3,10 @@ import NewThought from "../../components/app/new-thought";
 import { FollowSuggestions, RightAdvertising, TrendingsMini } from "../../components/app/right-container";
 import { RightOptionsContainer } from "../../components/app";
 import { MainThoughts } from "../../components/app/thoughts";
-import ReactGA from 'react-ga';
-import { useEffect } from "react";
 
 export default function Feed(){
     document.title = `Thidle`;
-
-    useEffect(()=>{
-        ReactGA.pageview(window.location.pathname + window.location.search);
-    })
+    
     return (
         <MainAppContainer>
             <RightOptionsContainer>

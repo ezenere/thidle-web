@@ -4,13 +4,14 @@ import { ContentContainer, ContinueButton, MainWebsiteContainer, FormContainer, 
 import AlternativeButton from '../../components/login/altButton';
 import { Input } from '../../components/login/input';
 import Menu from '../../components/login/menu';
-import ReactGA from 'react-ga';
 import { HTTPRequest } from '../../workers/commons';
+import { SetTokens } from '../../workers/auth';
 
 export function Login(){
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [formVars, setformVars] = useState({checking: false, checked: false, error: '', focusPassword: false});
+
     let focus = formVars.focusPassword;
 
 
@@ -27,17 +28,17 @@ export function Login(){
         setformVars({...formVars, checking: true, error: '', focusPassword: false});
 
         if(formVars.checked){
-            HTTPRequest('POST', "/api/v0/login/login", {username, password, "keep-logged": 'true'}, false).then(function(result){
+            HTTPRequest('POST', "/v0/auth/login", {username, password, "keep-logged": 'true'}, false).then(async (result) => {
                 if(result.success) {
-                    window.location.href = result.redirect;
-                    window.localStorage.thidleSession = result.token;
+                    await SetTokens(result.data);
+                    window.location.href = "/";
                 } else setformVars({error: result.error, checking: false, checked: true, focusPassword: true});
             })
         } else {
             let body = new FormData();
             body.append("username", username);
 
-            HTTPRequest('POST', "/api/v0/login/check", {username}, false).then(function(result){
+            HTTPRequest('GET', "/v0/auth/check", {username}, false).then(function(result){
                 if(result.success) {
                     setformVars({checked: true, checking: false, error: '', focusPassword: true});
                 } else setformVars({error: "Login Incorreto!", checking: false, checked: false, focusPassword: false});
@@ -47,7 +48,6 @@ export function Login(){
     
     useEffect(() => {
         if(formVars.focusPassword && focus) document.forms['login-form'].elements['password'].focus();
-        ReactGA.pageview(window.location.pathname + window.location.search);
     })
 
     return (

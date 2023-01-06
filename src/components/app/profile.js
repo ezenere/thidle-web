@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/user";
-import { emojify, FullDate, HTTPRequest, MonthAndYear, ProfileURL, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
+import { emojify, BirthdayDate, HTTPRequest, MonthAndYear, ProfileURL, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
 
 export default function RightUserInfo(props){
     const [active, setActive] = useState(false);
@@ -22,38 +22,38 @@ export default function RightUserInfo(props){
         <div className="user-profile-right-info-container">
             <div className={`user-profile-right-info-user-container${active ? ' active' : ''}`}>
                 <div className="user-profile-right-info-user-picture-container">
-                    <img className="user-profile-right-info-user-picture" alt="Current Profile" src={ProfileURL(props.userImage)}/>
+                    <img className="user-profile-right-info-user-picture" alt="Current Profile" src={ProfileURL(props?.picture)}/>
                 </div>
                 <div className="user-profile-right-info-user-info-container">
-                    <span className="thidle-user-profile-name-right">{emojify(props.name)}</span>
-                    <span className="thidle-user-profile-username-right">@{props.username}</span>
+                    <span className="thidle-user-profile-name-right">{emojify(props?.name ?? '')}</span>
+                    <span className="thidle-user-profile-username-right">@{props?.username ?? ''}</span>
                 </div>
             </div>
 
             <div className="user-profile-right-info-top">
-                <span className="user-profile-since-text">Thinking since, {MonthAndYear(props.creation ?? '')}</span>
+                <span className="user-profile-since-text">Thinking since {MonthAndYear(props?.creation ?? '')}</span>
                 <div className="user-profile-report-button">
                     <span className="user-profile-report-button-icon material-icons">flag</span>
                 </div>
             </div>
             
-            <div className="user-profile-right-info-description-container">{emojify(props.description ?? '')}</div>
+            <div className="user-profile-right-info-description-container">{emojify(props?.description ?? '')}</div>
 
             <div className="user-profile-right-info-additional-data-container">
-                {props.hometown ? <RInfoDataItem value={props.hometown} icon="house" /> : ''}
-                {props.displayBirthday ? <RInfoDataItem value={FullDate(props.birthday)} icon="cake" /> : ''}
-                {props.gender !== "N" ? <RInfoDataItem value={{"M":"Male","F":"Female","T":"Transgender","O":"Other"}[props.gender]} icon={{"M":"male","F":"female","T":"transgender","O":"transgender"}[props.gender]} /> : ''}
-                {props.website ? <RInfoDataItem value={RemoveHttp(props.website)} url={props.website} trusted={false} icon="language" /> : ''}
-                {props.instagram ? <RInfoDataItem value={props.instagram} imageIcon="/contents/assets/logos/ig-icon.png" trusted={true} url={TrustedURL("https://www.instagram.com/[]?ref=thidle.com", [props.instagram])} /> : ''}
+                {props?.details?.location ? <RInfoDataItem value={props.details.location} icon="house" /> : ''}
+                {props?.birthday ? <RInfoDataItem value={BirthdayDate(props.birthday)} icon="cake" /> : ''}
+                {props?.details?.pronoum ? <RInfoDataItem value={props.details.pronoum.pronoums} icon={props.details.pronoum.icon} /> : ''}
+                {props?.details?.website ? <RInfoDataItem value={RemoveHttp(props.details.website)} url={props.details.website} trusted={false} icon="language" /> : ''}
+                {props?.details?.instagram ? <RInfoDataItem value={props.details.instagram} imageIcon="/contents/assets/logos/ig-icon.png" trusted={true} url={TrustedURL("https://www.instagram.com/[]?ref=thidle.com", [props.details.instagram])} /> : ''}
             </div>
 
-            {props.friendObservedCount > 0 ? <div className="user-profile-right-info-observed-by-container">
+            {props?.friends?.count > 0 ? <div className="user-profile-right-info-observed-by-container">
                 <div className="user-profile-right-info-observed-by-images">
-                    {props.friendObserversUsers.slice(0, 5).map((item, index) => {
-                        return <div className="user-profile-right-info-observed-by" key={item.username}><img className="user-profile-right-info-observed-by-image" alt={`${item.name} Profile`} src={ProfileURL(item.userImage)} /></div>
+                    {props.friends.users.slice(0, 5).map((item, index) => {
+                        return <div className="user-profile-right-info-observed-by" key={item.username}><img className="user-profile-right-info-observed-by-image" alt={`${item.name} Profile`} src={ProfileURL(item.picture)} /></div>
                     })}
                 </div>
-                <div className="user-profile-right-info-observed-by-text">Observed by {props.friendObservedCount} {parseInt(props.friendObservedCount) === 1 ? 'person' : 'people'} you know</div>
+                <div className="user-profile-right-info-observed-by-text">Observed by {props.friends.count} {parseInt(props.friends.count) === 1 ? 'person' : 'people'} you know</div>
             </div> : ''}
         </div>
     )
@@ -81,7 +81,7 @@ export function ObserveButton(props){
 
     const updateFollowing = (e) => {
         setIsLoading(true);
-        HTTPRequest('POST', `/api/v0/action/observe`, {username: props.username, observe: !props.observing ? '1' : '0'}).then(response => {
+        HTTPRequest('POST', `/v0/action/observe`, {username: props.username, observe: !props.observing ? '1' : '0'}).then(response => {
             setIsLoading(false);
             if(response.success) {
                 props.setObserving(response.data.observers, !props.observing);

@@ -15,7 +15,9 @@ export function FollowSuggestions(props){
     useEffect(() => {
         setLastLocation(location.pathname);
         if(!ctx.rightSuggestions.loaded || location.pathname !== lastLocation){
-            HTTPRequest('GET', `/api/v0/thidle/suggestions?exclude=${location.pathname.split('/')[1]}`).then(result => {
+            const exclude = location.pathname.split('/')[1];
+
+            HTTPRequest('GET', `/v0/user/suggestions${exclude ? `?exclude=${exclude}` : ''}`).then(result => {
                 ctx.rightSuggestions.update(true);
                 setSuggestions(result.data);
             });

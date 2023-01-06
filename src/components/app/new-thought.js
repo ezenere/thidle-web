@@ -19,6 +19,11 @@ function fileReducer(state, action){
             currentId: state.currentId,
             files: state.files.filter((i) => i.id !== action.id)
         }
+    } else if(action.do === 'clear'){
+        return {
+            currentId: 0,
+            files: []
+        }
     }
 }
 
@@ -65,31 +70,22 @@ export default function NewThought(props){
     }
 
     const sendNewThought = (e) => {
-        var date = new Date();
-
-        var year = date.getFullYear();
-        var month = date.getMonth() + 1;
-        var day = date.getDate();
-        var hours = date.getHours();
-        var minutes = date.getMinutes();
-        var seconds = date.getSeconds();
-
         const creator = new ThoughtCreator({
             text: thoughtText, 
             pictures: files, 
-            video: '', 
-            audio: '', 
-            survey: '', 
-            gif: '', 
-            parent: 0, 
+            video: null, 
+            audio: null, 
+            survey: null, 
+            gif: null, 
+            parent: null, 
             privacy: privacy, 
             commentPrivacy: 'P', 
-            date: year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds
+            date: new Date(),
         }, function(){
             console.log('ok');
             setPosting(false);
             setThoughtText("");
-            setFiles([]);
+            setFiles({ do: 'clear' });
             setPrivacy("P");
             textareaReference.current.blur();
         }, function(err){
