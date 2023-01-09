@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Menu from "../../components/app/menu";
 import Feed from "./main";
-import Profile from "./profile";
+import Profile from "./profile/";
 import { UserContext } from "../../contexts/user"
 import { HTTPRequest, LoadingOverlay } from "../../workers/commons";
 import { ThoughtsContext } from "../../contexts/thoughts";
 import { Modals, useModals } from "../../contexts/modals";
+import SingleThought from "./thought";
 
 
 export default function MainApp(){
@@ -48,13 +49,13 @@ export default function MainApp(){
             <ThoughtsContext>
                 <Routes>
                     <Route path="/" element={<Feed />} />
-                    <Route path="/think/*" element={<div>Think</div>} />
+                    <Route path="/thought/:thought" element={<SingleThought />} />
                     <Route path="/notifications" element={<div>Notifications</div>} />
                     <Route path="/trending" element={<div>Trending</div>} />
                     <Route path="/discover" element={<div>Discover</div>} />
                     <Route path="/follow-suggestions" element={<div>Follow Suggestions</div>} />
                     <Route path="/messages" element={<div>Messages</div>} />
-                    <Route path="*" element={<Profile />} />
+                    <Route path="/:username/*" element={<Profile />} />
                 </Routes>
             </ThoughtsContext>
             <Modals />

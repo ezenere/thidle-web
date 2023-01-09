@@ -4,70 +4,43 @@ import { MainPostsContainer } from ".";
 import { useThoughts } from "../../contexts/thoughts";
 import { HTTPRequest, navigateTo, ProfileURL, stopPropagation, thinkDateRead } from "../../workers/commons";
 
-export function Thoughts(props){
-    const [thoughts, setThoughts] = useThoughts([]);
-    const [thoughtsLoading, setThoughtsLoading] = useState(false);
-    const [thoughtsLoaded, setThoughtsLoaded] = useState(false);
-    const [thoughtsPage, setThoughtsPage] = useState(0);
-    const [thoughtsLocation, setThoughtsLocation] = useState(null);
-
-    // useEffect(() => {
-    //     if(thoughtsLocation !== props.location || (!thoughtsLoading && !thoughtsLoaded)){
-    //         setThoughts([]);
-    //         setThoughtsLoading(true);
-    //         setThoughtsLocation(props.location);
-    //         setThoughtsPage(thoughtsPage+1);
-    //         HTTPRequest('GET',
-    //             props.location === 'main' ?
-    //             `/v0/thoughts?page=${thoughtsPage}`
-    //             :
-    //             `/v0/thoughts?user=${props.user}&page=${thoughtsPage}`
-    //         ).then(result => {
-    //             setThoughts(result.data);
-    //             setThoughtsLoading(false);
-    //             setThoughtsLoaded(true);
-    //         });
-    //     }
-    // }, [thoughts, props, setThoughts, thoughtsLoading, thoughtsLocation, thoughtsLoaded, thoughtsPage]);
-
-    return (
-        <MainPostsContainer>
-            {thoughts.map(thought => <Thought key={thought.id} data={thought} />)}
-        </MainPostsContainer>
-    )
-}
-
-export function MainThoughts(props){
-    const [thoughts, setThoughts] = useThoughts();
-    const [thoughtsLoading, setThoughtsLoading] = useState(false);
-    const [thoughtsLoaded, setThoughtsLoaded] = useState(false);
-    const [thoughtsPage, setThoughtsPage] = useState(0);
-    const [thoughtsInit, setThoughtsInit] = useState(false);
+export function UserThoughts({ user }){
+    const [thoughts, setThoughts] = useThoughts(`user-${user}`);
 
     useEffect(() => {
-        if(!thoughtsLoading && !thoughtsLoaded){
-            setThoughts([]);
-            setThoughtsLoading(true);
-            setThoughtsPage(thoughtsPage+1);
-            setThoughtsInit(true);
-            HTTPRequest('GET', 
-                `/v0/thought?page=${thoughtsPage}${!thoughtsInit ? '&init=true' : ''}`
-            ).then(result => {
-                setThoughts(result.data);
-                setThoughtsLoading(false);
-                setThoughtsLoaded(true);
-            });
+        if(!thoughts.loading && !thoughts.loaded){
+            setThoughts({loading: true, page: thoughts.page + 1, })
+            HTTPRequest('GET', `/v0/profile/${user}/thoughts?page=${thoughts.page}`)
+            .then(result => setThoughts({loading: false, items: result.data, loaded: true}));
         }
-    }, [thoughts, setThoughts, thoughtsLoading, thoughtsLoaded, thoughtsPage, thoughtsInit]);
+    }, [thoughts, user, setThoughts]);
 
     return (
         <MainPostsContainer>
-            {thoughts.map(thought => (<Thought key={thought.id} data={thought} />))}
+            {thoughts.items.map(thought => <Thought key={thought.id} data={thought} />)}
         </MainPostsContainer>
     )
 }
 
-export function Thought({data, isComment, primary, hasContinuation, isSubcomment, isRethink}){
+export function MainThoughts(){
+    const [thoughts, setThoughts] = useThoughts('main');
+
+    useEffect(() => {
+        if(!thoughts.loading && !thoughts.loaded){
+            setThoughts({loading: true, page: thoughts.page + 1, })
+            HTTPRequest('GET', `/v0/thought?page=${thoughts.page}`)
+            .then(result => setThoughts({loading: false, items: result.data, loaded: true}));
+        }
+    });
+
+    return (
+        <MainPostsContainer>
+            {thoughts.items.map(thought => (<Thought key={thought.id} data={thought} />))}
+        </MainPostsContainer>
+    )
+}
+
+export function Thought({data, isComment, primary, hasContinuation, isSubcomment, isRethink, featured}){
     const [userLiked, setUserLiked] = useState(data.user.like);
     const [likeCount, setLikeCount] = useState(data.count.like);
     const [userLikedLoading, setUserLikedLoading] = useState(false);
@@ -93,9 +66,11 @@ export function Thought({data, isComment, primary, hasContinuation, isSubcomment
         }
     }
 
+    console.log(data.comments);
+
     return (
         <div className={`thidle-think-main-publication-container${isComment ? ' comment' : ''}${primary ? ' is-primary-comment' : ''}${hasContinuation ? ' has-continuation' : ''}${isSubcomment ? ' isSubcomment' : ''}`}>
-            <div className="thidle-think-primary-content-isolation" onMouseDown={stopPropagation} onClick={(e) => navigateTo(e, navigate, `/think/${data.id}`)}>
+            <div className={`thidle-think-primary-content-isolation${featured ? ' featured' : ''}`} onMouseDown={stopPropagation} onClick={(e) => navigateTo(e, navigate, `/thought/${data.id}`)}>
                 <div className="thidle-think-top-info-container">
                     <div className="thidle-think-user-picture-main-container">
                         <div className="thidle-think-user-picture-container" onMouseDown={stopPropagation} onClick={(e) => navigateTo(e, navigate, `/${data.by.username}`)}>
@@ -154,13 +129,13 @@ export function Thought({data, isComment, primary, hasContinuation, isSubcomment
                         </div>
                         <div className={`thidle-think-option-button material-icons${data.user.comment ? ' active' : ''}`}>
                             <span className="thidle-think-option-button-icon material-icons-round">comment</span>
-                            <span className="thidle-think-option-button-text">{data.count.comments}</span>
+                            <span className="thidle-think-option-button-text">{data.count.comment}</span>
                         </div>
                     </div>
                 </div>
                 : ''}
             </div>
-            <Comments items={data.comments}/>
+            <Comments featured={!!featured} items={data.comments}/>
         </div>
     )
 }
@@ -224,11 +199,11 @@ function Rethink({data}){
     )
 }
 
-function Comments({items}){
+function Comments({featured, items}){
     return (
-        <div className="thidle-think-comments-container">{
+        <div className={`thidle-think-comments-container${featured ? ' featured' : ''}`}>{
             items.map((comment, index) => {
-                let needContinuation = items.reduce((f, c, cidx) => (c.primary && cidx > index) || f, false)
+                let needContinuation = items.reduce((f, c, cidx) => (cidx > index) || f, false)
                 return <Thought 
                     key={comment.id}
                     data={comment}

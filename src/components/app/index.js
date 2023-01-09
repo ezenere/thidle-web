@@ -6,7 +6,7 @@ export function AdditionalOption(props){
         <AdditionalOptionContainer activeBackground={props.activeBackground} noSpacers={props.noSpacers ?? false} isActive={props.isActive ? true : undefined} onClick={props.onClick}>
             <AdditionalOptionButton style={props.style}>
                 {props.icon ? <AdditionalOptionIcon>{props.icon}</AdditionalOptionIcon> : ''}
-                {props.title ? <AdditionalOptionText>{props.title}</AdditionalOptionText> : ''}
+                {props.title ? <AdditionalOptionText noMargin={!props.icon}>{props.title}</AdditionalOptionText> : ''}
             </AdditionalOptionButton>
         </AdditionalOptionContainer>
     )
@@ -22,20 +22,25 @@ export function Parallax(props){
         // eslint-disable-next-line
         imageNaturalHeight = ref.current?.clientHeight
         const onScroll = () => {
-            let newOs = document.querySelector("#thidle").scrollTop;
+            // let newOs = document.querySelector("#thidle").scrollTop;
+            let newOs = window.scrollY;
             let newS = calcStyle(newOs);
             ref.current.style.transform = newS.transform;
             ref.current.style.filter = newS.filter;
             setOffset(newOs);
         }
-        let newOs = document.querySelector("#thidle").scrollTop;
+        // let newOs = document.querySelector("#thidle").scrollTop;
+        let newOs = window.scrollY;
         let newS = calcStyle(newOs);
         ref.current.style.transform = newS.transform;
         ref.current.style.filter = newS.filter;
 
-        document.querySelector("#thidle").removeEventListener('scroll', onScroll);
-        document.querySelector("#thidle").addEventListener('scroll', onScroll, { passive: true });
-        return () => document.querySelector("#thidle").removeEventListener('scroll', onScroll);
+        // document.querySelector("#thidle").removeEventListener('scroll', onScroll);
+        // document.querySelector("#thidle").addEventListener('scroll', onScroll, { passive: true });
+        // return () => document.querySelector("#thidle").removeEventListener('scroll', onScroll);
+        window.removeEventListener('scroll', onScroll);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
     });
 
     const calcStyle = (os) => {
@@ -111,7 +116,7 @@ const AdditionalOptionText = styled.span`
     font-family: 'Montserrat', sans-serif;
     display: inline-block;
     vertical-align: middle;
-    margin-left: 10px;
+    ${({noMargin}) => !noMargin && 'margin-left: 10px;'}
     font-weight: 500;
 `
 

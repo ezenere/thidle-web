@@ -897,8 +897,11 @@ i.thidle-think-content-image-album-image-selector.active::before{
     cursor: pointer;
 }
 
-.thidle-think-main-publication-container.comment > .thidle-think-primary-content-isolation{
+/* .thidle-think-main-publication-container.comment > .thidle-think-primary-content-isolation{
     padding-left: 15px
+} */
+.thidle-think-main-publication-container.comment {
+    padding-left: 5px;
 }
 
 img.thidle-think-user-picture:hover {
@@ -1281,4 +1284,71 @@ span.thidle-think-info-reposted-indicator-icon.material-icons-round {
 span.thidle-think-info-reposted-indicator-username {
     vertical-align: middle;
     font-weight: 600;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-user-picture-container {
+    width: 50px;
+    height: 50px;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-user-info-name-container {
+    font-size: 12pt;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-info-container {
+    font-size: 9pt;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-user-info-main-container {
+    margin-top: 4px;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-content-text {
+    font-size: 14pt;
+}
+
+.thidle-think-primary-content-isolation.featured span.thidle-think-option-button-icon.material-icons-round {
+    font-size: 21px;
+}
+
+.thidle-think-primary-content-isolation.featured span.thidle-think-option-button-text {
+    font-size: 10pt;
+    padding-left: 10px;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-options-container {
+    margin-left: 25px;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-content-container {
+    margin-left: 25px;
+}
+
+.thidle-think-comments-container.featured {
+    padding-left: 37px;
+}
+
+.thidle-think-comments-container.featured:not(:empty)::after {
+    left: 35px;
+}
+
+.thidle-think-primary-content-isolation.featured .thidle-think-option-button.material-icons {
+    margin-right: 45px;
+}
+
+.thidle-user-profile-image-container.changeable:hover .thidle-user-profile-image-change-button  {
+    opacity: 1;
+}
+
+.thidle-user-profile-image-change-button {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    color: #ffffff9e;
+    background-color: #00000080;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    cursor: pointer;
 }

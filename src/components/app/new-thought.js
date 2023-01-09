@@ -98,7 +98,7 @@ export default function NewThought(props){
     }
 
     return (
-        <Container>
+        <Container mtop={props.mtop}>
             {posting && <SendingPostProgressContainer>
                 <SendingPostProgress/>
             </SendingPostProgressContainer>}
@@ -254,6 +254,7 @@ const SubmitThinkButton = styled.div`
 
 
 const Container = styled.div`
+    ${(p) => p.mtop ? 'margin-top: 20px;' : ''}
     width: 100%;
     box-sizing: border-box;
     background-color: #0E1C25;

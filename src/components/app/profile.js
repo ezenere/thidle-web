@@ -6,16 +6,16 @@ export default function RightUserInfo(props){
     const [active, setActive] = useState(false);
 
     useEffect(() => {
-        const th = document.querySelector("#thidle")
+        // const th = document.querySelector("#thidle")
         const onScroll = () => {
-            let st = th.scrollTop;
+            let st = window.scrollY; // th.scrollTop;
             if(st > 450 && !active) setActive(true);
             else if(st < 450 && active) setActive(false);
         }
 
-        th.removeEventListener('scroll', onScroll);
-        th.addEventListener('scroll', onScroll, { passive: true });
-        return () => th.removeEventListener('scroll', onScroll);
+        window.removeEventListener('scroll', onScroll);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
     });
 
     return (
@@ -49,7 +49,7 @@ export default function RightUserInfo(props){
 
             {props?.friends?.count > 0 ? <div className="user-profile-right-info-observed-by-container">
                 <div className="user-profile-right-info-observed-by-images">
-                    {props.friends.users.slice(0, 5).map((item, index) => {
+                    {props.friends.users.slice(0, 5).map((item) => {
                         return <div className="user-profile-right-info-observed-by" key={item.username}><img className="user-profile-right-info-observed-by-image" alt={`${item.name} Profile`} src={ProfileURL(item.picture)} /></div>
                     })}
                 </div>

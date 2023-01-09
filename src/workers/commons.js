@@ -2,7 +2,7 @@ import joypixels from "emoji-toolkit";
 import { useModals } from "../contexts/modals";
 import { DecryptToken, RemoveTokens, SetTokens } from "./auth";
 
-const apiUrl = "http://localhost:3000" //"https://api.thidle.com/";
+const apiUrl = "http://localhost:3001"; //"https://api.thidle.com/";
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -121,7 +121,7 @@ async function RevalidateToken(){
     if(!httpRequestStatus.refreshing) {
         httpRequestStatus.refreshing = true;
         new Promise(async (resolve) => {
-            fetch(`${apiUrl}/auth/revalidate`, {
+            fetch(`${apiUrl}/v0/auth/revalidate`, {
                 method: 'POST',
                 headers: new Headers({
                     Authorization: ['Bearer', (await DecryptToken(window.localStorage.getItem('r')))].join(' ')

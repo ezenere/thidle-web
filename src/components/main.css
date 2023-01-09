@@ -4,6 +4,7 @@ body {
     position: absolute;
     width: 100%;
     height: 100%;
+    overflow-y: scroll;
 }
 
 body:not(.app)::before {
@@ -24,4 +25,7 @@ a {
     color: inherit;
 }
 
-div#thidle {height: 100%;overflow: auto;}
+/* div#thidle {
+    height: 100%;
+    overflow: visible;
+} */

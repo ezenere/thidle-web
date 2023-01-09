@@ -1,20 +1,28 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useReducer } from "react";
 
-const ThoughtsCtx = React.createContext([]);
+const ThoughtsCtx = React.createContext({});
 
-export function useThoughts(){
-    return useContext(ThoughtsCtx);
+const def = {limit: 30, page: 0, items: [], loading: false, loaded: false};
+function reduce(state, [name, value]) {
+    state[name] = { ...def, ...state[name], ...value };
+    return { ...state }
+}
+
+export function useThoughts(name){
+    const [values, setValues] = useContext(ThoughtsCtx);
+    console.log(values);
+    const value = { ...def, ...values[name] };
+    const setValue = (val) => {
+        setValues([name, val]);
+    }
+    return [value, setValue];
 }
 
 export function ThoughtsContext(props){
-    const [publications, setPublications] = useState([]);
-
-    const setPublicationsContext = (items) => {
-        setPublications(items);
-    }
+    const red = useReducer(reduce, {});
 
     return (
-        <ThoughtsCtx.Provider value={[publications, setPublicationsContext]}>
+        <ThoughtsCtx.Provider value={red}>
             {props.children}
         </ThoughtsCtx.Provider>
     )
