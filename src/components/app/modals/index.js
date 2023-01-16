@@ -2,18 +2,17 @@ import styled from "styled-components"
 
 export const ModalBackgroudContainer = styled.div`
     position: fixed;
-    width: 100%;;
+    width: 100%;
     height: 100%;
     top: 0px;
     left: 0px;
     z-index: 2000;
     background-color: rgba(0, 0, 0, 0.75);
-    opacity: 1;
-    visibility: visible;
     animation-name: modal-background;
     animation-duration: 0.2s;
     animation-iteration-count: 1;
     display: flex;
+    transition: opacity 0.2s, visibility 0.2s;
 `
 
 export const ModalBox = styled.div`
@@ -47,6 +46,7 @@ export const ModalBody = styled.div`
 `
 
 export const ModalTitle = styled.div`
+    ${({ml}) => ml ? `margin-left: ${ml}px;` : ''}
     flex: 1 0 auto;
     font-size: 16px;
     font-weight: 500;
@@ -54,6 +54,45 @@ export const ModalTitle = styled.div`
     text-align: center;
     padding: 10px;
     color: white;
+`
+
+export const TitleButton = styled.div.attrs({
+    className: 'material-icons-round'
+})`
+    font-size: 24px;
+    color: white;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+    cursor: pointer;
+    margin: 6px;
+    margin-right: 10px;
+    ::before {
+        content: 'close';
+    }
+    :hover {
+        opacity: 1;
+    }
+`
+
+
+export const CloseTitleButton = styled(TitleButton)`
+    ::before {  content: 'close'; }
+`
+
+export const BackTitleButton = styled(TitleButton)`
+    ::before { content: 'arrow_back'; }
+`
+
+export const ExcludeTitleButton = styled(TitleButton)`
+    ::before { content: 'delete'; }
+    opacity: 0.7;
+    color: #e70000;
+`
+
+export const FinishTitleButton = styled(TitleButton)`
+    ::before { content: 'done'; }
+    opacity: 0.7;
+    color: lime;
 `
 
 export function ModalComponent(props){

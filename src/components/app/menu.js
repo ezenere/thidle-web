@@ -53,7 +53,7 @@ export default function Menu(){
                         </NewThoughtButtonContainer>
                         <LoggedUserMenu ref={userMenuDropdownRef}>
                             <LoggedUserImageContainer onClick={() => setUserMenuDropdownActive(true)}>
-                                <LoggedUserImage alt="Logged User Menu Image" src={ProfileURL(userContext.values.userImage)}/>
+                                <LoggedUserImage alt="Logged User Menu Image" src={ProfileURL(userContext.values.picture)}/>
                             </LoggedUserImageContainer>
                             <LoggedUserMenuOptionsContainer isActive={userMenuDropdownActive}>
                                 <Link to={`/${userContext.values.username}`}>

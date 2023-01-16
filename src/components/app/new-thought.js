@@ -40,7 +40,7 @@ export default function NewThought(props){
     const [posting, setPosting] = useState(false);
 
     const textareaInput = (e) => {
-        setThoughtText(e.target.innerHTML);
+        setThoughtText(e.target.innerText);
     }
 
     const onFileChange = (e) => {
@@ -105,7 +105,7 @@ export default function NewThought(props){
             <div style={posting ? {opacity: 0.5, pointerEvents: 'none'} : {}}>
                 <TextInputContainer>
                     <UserIconContainer>
-                        <UserImage alt="Submit New Thought Logged User" src={ProfileURL(userInfo.values.userImage)}/>
+                        <UserImage alt="Submit New Thought Logged User" src={ProfileURL(userInfo.values.picture)}/>
                     </UserIconContainer>
                     <InputContainer onClick={() => textareaReference.current.focus()}>
                         <TextareaBox>

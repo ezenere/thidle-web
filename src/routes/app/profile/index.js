@@ -8,6 +8,7 @@ import { useParams, useMatch, useNavigate } from "react-router-dom";
 import { UserContext } from "../../../contexts/user";
 import NewThought from "../../../components/app/new-thought";
 import ProfileTabs from "./tabs";
+import UpdateProfilePicture from "../../../components/app/modals/profile-picture";
 
 export default function Profile(props){
     const [profile, setProfile] = useState({});
@@ -17,6 +18,7 @@ export default function Profile(props){
     const [profileLoading, setProfileLoading] = useState(false);
     const userInfo = useContext(UserContext);
     const navigate = useNavigate();
+    const [changingProfilePicture, setChangingProfilePicture] = useState(false);
 
     const { username } = useParams();
 
@@ -61,8 +63,8 @@ export default function Profile(props){
             <MainContentContainer>
                 <div className="thidle-user-profile-main-info-container" style={profileLoading ? {pointerEvents: "none", opacity: 0.5} : {}}>
                     <div className={`thidle-user-profile-image-container${username === userInfo.values.username ? ' changeable' : ''}`}>
-                        {username === userInfo.values.username && <div className="thidle-user-profile-image-change-button material-icons-round">add_a_photo</div>}
-                        <img className="thidle-user-profile-image" src={ProfileURL(profile.picture)} alt={`${profile.username ?? ''} Profile`}/>
+                        {username === userInfo.values.username && <div className="thidle-user-profile-image-change-button material-icons-round" onClick={() => setChangingProfilePicture(true)}>add_a_photo</div>}
+                        <img className="thidle-user-profile-image" src={ProfileURL(username === userInfo.values.username ? userInfo.values.picture : profile.picture)} alt={`${profile.username ?? ''} Profile`}/>
                     </div>
                     <div className="thidle-user-profile-info-container">
                         {profile?.username !== userInfo.values.username ?
@@ -104,6 +106,7 @@ export default function Profile(props){
                 <ProfileTabs username={username}/>
 
             </MainContentContainer>
+            <UpdateProfilePicture picture={userInfo.values.picture} active={changingProfilePicture} close={() => setChangingProfilePicture(false)} />
         </MainAppContainer>
     )
 }

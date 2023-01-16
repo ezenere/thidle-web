@@ -599,6 +599,11 @@ button.thidle-think-options-button:hover span.thidle-think-options-icon {
     margin-top: 2px;
 }
 
+.thidle-think-content-video {
+    width: 100%;
+    max-height: 500px;
+}
+
 .thidle-think-content-text {
     white-space: pre-wrap;
     font-size: 10pt;

@@ -27,6 +27,12 @@ export const ContinueButton = styled(DefaultButton)`
     ${props => props.marginTop ? `margin-top: ${props.marginTop}` : ''};
 `;
 
+export const CancelButton = styled(DefaultButton)`
+    color: white;
+    background-color: #a50000;
+    ${props => props.marginTop ? `margin-top: ${props.marginTop}` : ''};
+`;
+
 export const ContentContainer = styled.div`
     height: 100%;
     width: 100%;

@@ -22,7 +22,7 @@ export default function MainApp(){
 
     const setUserContext = (key, value) => {
         userInfoValues[key] = value;
-        setUserInfo(userInfoValues);
+        setUserInfo({...userInfoValues});
     }
     
     const getUserInfo = async () => {

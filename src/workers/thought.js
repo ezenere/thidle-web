@@ -22,7 +22,6 @@ export class ThoughtCreator {
     }
 
     create(){
-        const _self = this;
         HTTPRequest("POST", "/v0/thought", {
             "text": this.text,
             "privacy": this.privacy,
@@ -31,33 +30,31 @@ export class ThoughtCreator {
             "embeed": null
         }).then((result) => {
             if(result.status === 201) {
-                _self.id = result.data.id;
-                _self.upload();
-            } else _self.handleError(result);
+                this.id = result.data.id;
+                this.upload();
+            } else this.handleError(result);
         });
     }
 
     upload(){
         console.log('uploading')
-        const _self = this;
-        asyncFor(this.pictures, function(current, values, index, next){
-            const uploader = new Uploader(current);
-            uploader.upload(function(id, hash){
-                _self.uploadedFiles.push({id, hash})
+        asyncFor(this.pictures, (current, values, index, next) => {
+            const uploader = new Uploader(current, 'thought', { id: this.id });
+            uploader.upload((id, hash) => {
+                this.uploadedFiles.push({id, hash})
                 next();
-            }, function(err){
-                _self.handleError(err);
+            }, (err) => {
+                this.handleError(err);
             });
-        }, function(){
-            _self.finish()
+        }, () => {
+            this.finish()
         })
     }
 
     finish(){
-        const _self = this;
         HTTPRequest("PUT", `/v0/thought/${this.id}`).then((result) => {
             console.log(result)
-            _self.endCallback();
+            this.endCallback(result);
         });
     }
 

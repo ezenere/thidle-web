@@ -9,13 +9,19 @@ export class Uploader{
     errorCallbackHolder = null;
     errors = 0;
     chunkLength = 10485760;
+    resolve = null;
+    reject = null;
+    putPath = '';
+    putData = null;
 
-    constructor(file){
-        this.file = file.file;
+    constructor(file, path = '', data = null){
+        this.file = file.file || file;
         this.total = this.file.size;
+        this.putData = data;
+        this.putPath = path;
     }
 
-    upload(endCallback, errorCallback){
+    async upload(endCallback, errorCallback){
         console.log(this.file)
         const _self = this;
 
@@ -29,52 +35,55 @@ export class Uploader{
         }).then((result) => {
             if(result.success){
                 _self.key = result.data.key;
-                _self.stream();
-            } else _self.handleError(result.errno, result.error);
+                _self._stream();
+            } else _self._handleError(result.errno, result.error);
+        });
+
+        return new Promise((resolve, reject) => {
+            this.resolve = resolve;
+            this.reject = reject;
         });
     }
 
-    stream(){
-        let _self = this;
-        console.log('stream')
-
+    _stream(){
         const fd = new FormData();
         fd.append('chunk', this.file.slice(this.sent, this.sent+this.chunkLength));
         HTTPRequest("POST", `/v0/upload/${this.key}`, fd).then((result) => {
             if(result.success){
-                _self.sent += _self.chunkLength;
+                this.sent += this.chunkLength;
 
-                if(_self.sent < _self.total){
-                    _self.upload.progress = _self.sent;
-                    _self.stream();
+                if(this.sent < this.total){
+                    this.upload.progress = this.sent;
+                    this._stream();
                 } else {
-                    _self.sent = _self.total;
-                    _self.finish();
+                    this.sent = this.total;
+                    this._finish();
                 }
             } else {
-                _self.errors++;
-                if(_self.errors < 5){
+                this.errors++;
+                if(this.errors < 5){
                     console.log("There was an error while uploading part file");
-                    _self.errors++;
-                    _self.stream();
+                    this.errors++;
+                    this._stream();
                 } else {
-                    console.log("There was an error uploading the file!");
-                    if(typeof _self.errorCallbackHolder == "function") _self.errorCallbackHolder();
+                    this._handleError("ERR_UP", "There was an error uploading the file!");
+                    this.reject();
                 }
             }
         })
     }
 
-    handleError(errno, error){
-        this.errorCallbackHolder(errno, error);
+    _handleError(errno, error){
+        if(typeof this.errorCallbackHolder === 'function') this.errorCallbackHolder(errno, error);
+        this.reject(errno, error);
     }
 
-    finish(){
-        const _self = this;
-        HTTPRequest("PUT", `/v0/upload/${this.key}`).then((result) => {
+    _finish(){
+        HTTPRequest("PUT", `/v0/upload/${this.key}${this.putPath ? `/${this.putPath}` : ''}`, this.putData).then((result) => {
             if(result.success){
-                if(typeof _self.endCallbackHolder == "function") _self.endCallbackHolder();
-            } else _self.handleError(result.errno, result.error);
+                if(typeof this.endCallbackHolder == "function") this.endCallbackHolder(result.data);
+                this.resolve(result.data);
+            } else this._handleError(result.errno, result.error);
         });
     }
 }

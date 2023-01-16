@@ -89,8 +89,9 @@ export async function HTTPRequest(method, url = null, data = null, needLogin = t
         const result = await TryRequest(method, url, data.query, data.body, needLogin);
         return result;
     } catch(err){
-        if(await RevalidateToken()) HTTPRequest(method, url, data, needLogin);
-        //else window.location.href = "/";
+        const revalidated = await RevalidateToken();
+        if(revalidated) return HTTPRequest(method, url, data, needLogin);
+        else window.location.href = "/";
     }
 }
 
@@ -120,7 +121,7 @@ async function TryRequest(method, url, query, body, needLogin){
 async function RevalidateToken(){
     if(!httpRequestStatus.refreshing) {
         httpRequestStatus.refreshing = true;
-        new Promise(async (resolve) => {
+        return new Promise(async (resolve) => {
             fetch(`${apiUrl}/v0/auth/revalidate`, {
                 method: 'POST',
                 headers: new Headers({
@@ -132,9 +133,7 @@ async function RevalidateToken(){
 
                     await SetTokens(keys);
 
-                    httpRequestStatus.pending.forEach((i) => {
-                        i();
-                    });
+                    httpRequestStatus.pending.forEach((i) => i());
                     httpRequestStatus.pending = [];
                     httpRequestStatus.refreshing = false;
 
@@ -147,9 +146,10 @@ async function RevalidateToken(){
             })
         })
     } else {
-        return new Promise((resolve) => {
+        const ret = await new Promise((resolve) => {
             httpRequestStatus.pending.push(() => { resolve(true); });
         });
+        return ret;
     }
 }
 

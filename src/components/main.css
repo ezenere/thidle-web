@@ -7,6 +7,10 @@ body {
     overflow-y: scroll;
 }
 
+body.app.no-overflow {
+    overflow: hidden;
+}
+
 body:not(.app)::before {
     content: '';
     position: fixed;
