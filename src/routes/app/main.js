@@ -16,7 +16,7 @@ export default function Feed(){
             </RightOptionsContainer>
 
             <MainContentContainer>
-                <NewThought />
+                <NewThought tKey="main"/>
                 <MainThoughts/>
             </MainContentContainer>
         </MainAppContainer>

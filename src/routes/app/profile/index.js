@@ -1,7 +1,7 @@
 import { AdditionalOption, MainAppContainer, MainContentContainer, OptionsContainer, Parallax } from "../../../components/app";
 import { FollowSuggestions, RightAdvertising } from "../../../components/app/right-container";
 import { RightOptionsContainer } from "../../../components/app";
-import RightUserInfo, { ObserveButton } from "../../../components/app/profile";
+import RightUserInfo, { ObserveButton, PrivateProfileMessage } from "../../../components/app/profile";
 import { useContext, useEffect, useState } from "react";
 import { HTTPRequest, ProfileURL } from "../../../workers/commons";
 import { useParams, useMatch, useNavigate } from "react-router-dom";
@@ -21,10 +21,6 @@ export default function Profile(props){
     const [changingProfilePicture, setChangingProfilePicture] = useState(false);
 
     const { username } = useParams();
-
-    const setObserving = (observers, isObserving) => {
-        setProfile({...profile, observers, isFollowing: isObserving ? '1' : '0'})
-    }
 
     useEffect(() => {
         if(profileUsername !== username){
@@ -48,6 +44,14 @@ export default function Profile(props){
         }
     }, [username, profileError, profileUsername])
 
+    const matches = {
+        thoughts: useMatch('/:username'),
+        comments: useMatch('/:username/comments'),
+        swifts: useMatch('/:username/swifts'),
+        media: useMatch('/:username/media'),
+        likes: useMatch('/:username/likes')
+    }
+
     return (
         <MainAppContainer marginTop="60px">
             <div className="thidle-user-profile-main-info-background-container" style={profileLoading ? (lastHeight !== 0 ? {height: `${lastHeight}px`} : {}) : (!profile?.background ? {height: `100px`, backgroundColor: "#0e1c25"} : {})}>
@@ -68,9 +72,9 @@ export default function Profile(props){
                     </div>
                     <div className="thidle-user-profile-info-container">
                         {profile?.username !== userInfo.values.username ?
-                            <ObserveButton observing={profile?.following ?? 0} setObserving={setObserving} username={profile?.username ?? null} /> :
-                            <button className={`thidle-user-profile-observe-button${props.observing ? ' active' : ''}`} onClick={(e) => {userInfo.profileEdit(e)}}>
-                                <div className="thidle-user-profile-observe-button-observe-option" style={{padding: '3px'}}>
+                            <ObserveButton profile={profile} setProfile={setProfile}  /> :
+                            <button className={`thidle-user-profile-observe-button`} onClick={(e) => {userInfo.profileEdit(e)}}>
+                                <div className="thidle-user-profile-observe-button-observe-option observe active" style={{ padding: '6px 0px' }}>
                                     <span className="thidle-user-profile-observe-button-text">Edit</span>
                                 </div>
                             </button>
@@ -93,20 +97,24 @@ export default function Profile(props){
                         </div>
                     </div>
                 </div>
-                {username === userInfo.values.username && <NewThought mtop={true} />}
+                {username === userInfo.values.username && <NewThought mtop={true} tKey={`user-${username}`} />}
 
-                <OptionsContainer marginTop="20px">
-                    <AdditionalOption isActive={useMatch('/:username')} title="Thoughts" onClick={() => navigate(`/${username}`)} />
-                    <AdditionalOption isActive={useMatch('/:username/comments')} title="Comments" onClick={() => navigate(`/${username}/comments`)} />
-                    <AdditionalOption isActive={useMatch('/:username/swifts')} title="Swifts" onClick={() => navigate(`/${username}/swifts`)} />
-                    <AdditionalOption isActive={useMatch('/:username/media')} title="Media" onClick={() => navigate(`/${username}/media`)} />
-                    <AdditionalOption isActive={useMatch('/:username/likes')} title="Likes" onClick={() => navigate(`/${username}/likes`)} />
-                </OptionsContainer>
+                {(profile?.follow?.status === 1 || profile?.private === 0) ? (<>
+                    <OptionsContainer marginTop="20px">
+                        <AdditionalOption isActive={matches.thoughts} title="Thoughts" onClick={() => navigate(`/${username}`)} />
+                        <AdditionalOption isActive={matches.comments} title="Comments" onClick={() => navigate(`/${username}/comments`)} />
+                        <AdditionalOption isActive={matches.swifts} title="Swifts" onClick={() => navigate(`/${username}/swifts`)} />
+                        <AdditionalOption isActive={matches.media} title="Media" onClick={() => navigate(`/${username}/media`)} />
+                        <AdditionalOption isActive={matches.likes} title="Likes" onClick={() => navigate(`/${username}/likes`)} />
+                    </OptionsContainer>
 
-                <ProfileTabs username={username}/>
-
+                    <ProfileTabs username={username}/>
+                </>) : (
+                    <PrivateProfileMessage>This profile is private, follow to view thoughts</PrivateProfileMessage>
+                )}
             </MainContentContainer>
             <UpdateProfilePicture picture={userInfo.values.picture} active={changingProfilePicture} close={() => setChangingProfilePicture(false)} />
         </MainAppContainer>
     )
 }
+

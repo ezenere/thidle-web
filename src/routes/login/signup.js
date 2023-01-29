@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { ContentContainer, ContinueButton, FormContainer, FormCall, DisplayText, Form, OverflowFormContainer, FormReturnMessage } from '../../components/login';
 import { BirthdaySelect, Input, Select } from '../../components/login/input';
 import Menu from '../../components/login/menu';
+import { SetTokens } from '../../workers/auth';
+import { HTTPRequest } from '../../workers/commons';
 
 export default function SignUp(){
     const [overflowLeft, setOverflowLeft] = useState({old: 0, current: 0});
@@ -33,7 +35,7 @@ export default function SignUp(){
 
 
 function FirstForm(props){
-    const [formValues, setFormValues] = useState({name: '', mail: '', bDay: '', bMonth: '', bYear: '', gender: '', invite: ''});
+    const [formValues, setFormValues] = useState({name: '', mail: '', bDay: '', bMonth: '', bYear: '', pronoum: '', invite: ''});
     const [formError, setFormError] = useState('');
     const [formDisabled, setFormDisabled] = useState(false);
 
@@ -46,31 +48,22 @@ function FirstForm(props){
         if(!formValues.bDay) return setFormError('Dia de nascimento deve ser selecionado!');
         if(!formValues.bMonth) return setFormError('Mês de nascimento deve ser selecionado!');
         if(!formValues.bYear) return setFormError('Ano de nascimento deve ser selecionado!');
-        if(!formValues.gender) return setFormError('Gênero deve ser selecionado!');
+        if(!formValues.pronoum) return setFormError('Pronome deve ser selecionado!');
         if(!formValues.invite) return setFormError('Código de convite não pode estar vazio!');
-
-        let body = new FormData();
-        body.append('name', formValues.name);
-        body.append('mail', formValues.mail);
-        body.append('birth-day', formValues.bDay);
-        body.append('birth-month', formValues.bMonth);
-        body.append('birth-year', formValues.bYear);
-        body.append('gender', formValues.gender);
-        body.append('invite', formValues.invite);
 
         setFormError('');
         setFormDisabled(true);
 
-        fetch("https://thidle.com/api/v0/login/create/signup", {method: "POST", body})
-        .then((response)=>{return response.json();})
+        HTTPRequest('POST', '/v0/signup', formValues, false)
         .then((result)=>{
+            console.log(result)
             if(result.success){
-                window.sessionStorage.signupSession = result.token;
+                window.sessionStorage.signupSession = result.data.token;
                 props.setPosition(350);
                 props.setValues({...props.values, name: formValues.name, mail: formValues.mail});
             } else {
                 setFormDisabled(false);
-                setFormError(result.error);
+                setFormError(result.data.message);
             }
         });
     }
@@ -87,12 +80,11 @@ function FirstForm(props){
                 <Input name="mail" value={formValues.mail} onChange={(e) => {setFormValues({...formValues, mail: e.target.value.substr(0, 321)})}} type="email" placeholder="Qual é o seu E-Mail?"/>
                 <DisplayText fontSize='9pt' hasTop middle>Quando você nasceu?</DisplayText>
                 <BirthdaySelect values={formValues} setValues={setFormValues}/>
-                <Select onChange={(e) => {setFormValues({...formValues, gender: e.target.value})}}>
-                    <option value="D" selected disabled>Selecione seu gênero</option>
-                    <option value="M">Masculino</option>
-                    <option value="F">Feminino</option>
-                    <option value="T">Transgênero</option>
-                    <option value="O">Outro</option>
+                <Select onChange={(e) => {setFormValues({...formValues, pronoum: e.target.value})}}>
+                    <option value="D" selected disabled>Selecione seu pronome</option>
+                    <option value="M">Ele/Dele</option>
+                    <option value="F">Ela/Dela</option>
+                    <option value="T">Elu/Delu</option>
                     <option value="N">Não Informar</option>
                 </Select>
                 <DisplayText fontSize='9pt' hasTop middle>Para criar uma conta no Thidle, você deve ter um código de convite de alguém que já está usando o Thidle.</DisplayText>
@@ -116,12 +108,7 @@ function SecondForm(props){
         setFormError('');
         setFormDisabled(true);
 
-
-        let body = new FormData();
-        body.append('confirm-code', confirm);
-
-        fetch("https://thidle.com/api/v0/login/create/confirm", {method: "POST", body, headers: new Headers({'Authorization': window.sessionStorage.signupSession})})
-        .then((response)=>{return response.json();})
+        HTTPRequest("PATCH", `/v0/signup/${window.sessionStorage.signupSession}`, { code: confirm }, false)
         .then((result)=>{
             if(result.success){
                 props.setPosition(700);
@@ -201,12 +188,15 @@ function ThirdForm(props){
         }
 
         return new Promise(resolve => {
-            tOut = setTimeout(() => fetch("https://thidle.com/api/v0/login/create/checkUsername?username="+value, {headers: new Headers({'Authorization': window.sessionStorage.signupSession})})
-            .then((response)=>{return response.json();})
+            tOut = setTimeout(() => HTTPRequest("GET", `/v0/signup/${window.sessionStorage.signupSession}`, { username: value }, false)
             .then((result)=>{
-                if(result.success) setUsernameStatus('Nome de usuário disponível')
-                else setUsernameStatus('Este nome de usuário está indisponível');
-                resolve(result.success ?? true)
+                if(result.success && result.data.available) {
+                    setUsernameStatus('Nome de usuário disponível')
+                    resolve(true)
+                } else {
+                    setUsernameStatus('Este nome de usuário está indisponível');
+                    resolve(false)
+                }
             }), instant ? 0 : 250);
         });
     }
@@ -220,17 +210,11 @@ function ThirdForm(props){
         setFormError('');
         setFormDisabled(true);
 
-        let body = new FormData();
-        body.append('username', username);
-        body.append('password', password.first);
-        body.append('re-password', password.second);
-
-        fetch("https://thidle.com/api/v0/login/create/finish", {method: "POST", body, headers: new Headers({'Authorization': window.sessionStorage.signupSession})})
-        .then((response)=>{return response.json();})
-        .then((result)=>{
+        HTTPRequest("POST", `/v0/signup/${window.sessionStorage.signupSession}`, {username, password: password.first}, false)
+        .then(async (result)=>{
             if(result.success){
-                window.localStorage.thidleSession = result.token;
-                window.location.href = result.redirect;
+                await SetTokens(result.data);
+                window.location.href = result.data.redirect;
             } else {
                 setFormDisabled(false);
                 setFormError(result.error);

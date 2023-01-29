@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import styled from "styled-components";
 import { UserContext } from "../../contexts/user";
 import { emojify, BirthdayDate, HTTPRequest, MonthAndYear, ProfileURL, RemoveHttp, TrustedURL, UntrustedLink } from "../../workers/commons"
 
@@ -75,35 +76,61 @@ function RInfoDataItem(props){
     )
 }
 
-export function ObserveButton(props){
+export function ObserveButton({ profile, setProfile }){
     const [isLoading, setIsLoading] = useState(false);
+    const [over, setOver] = useState(false);
     const ctx = useContext(UserContext);
+    
+    if(!profile.follow) return null;
 
     const updateFollowing = (e) => {
         setIsLoading(true);
-        HTTPRequest('POST', `/v0/action/observe`, {username: props.username, observe: !props.observing ? '1' : '0'}).then(response => {
+        HTTPRequest(profile.follow.status !== 0 ? 'DELETE' : 'POST', `/v0/profile/${profile.username}/follow`).then(response => {
             setIsLoading(false);
             if(response.success) {
-                props.setObserving(response.data.observers, !props.observing);
+                profile.follow.status = response.data.status;
+                setProfile({ ...profile });
                 ctx.rightSuggestions.update(false);
             }
         });
     }
 
     return (
-        <button className={`thidle-user-profile-observe-button${props.observing ? ' active' : ''}`} onClick={(e) => {updateFollowing(e)}} style={isLoading ? {opacity: 0.5, pointerEvents: 'none'} : {}}>
-            <div className="thidle-user-profile-observe-button-observe-option">
+        <button className="thidle-user-profile-observe-button" onMouseEnter={() => setOver(true)} onMouseLeave={() => setOver(false)} onClick={(e) => {updateFollowing(e)}} style={isLoading ? {opacity: 0.5, pointerEvents: 'none'} : {}}>
+            <div className={`thidle-user-profile-observe-button-observe-option observe${profile.follow.status === 0 ? ' active' : ''}`}>
                 <span className="thidle-user-profile-observe-button-text">Observe</span>
                 <span className="thidle-user-profile-observe-button-icon material-icons-round">person_add</span>
             </div>
-            <div className="thidle-user-profile-observe-button-observing-option">
-                <span className="thidle-user-profile-observe-button-text">Observing</span>
-                <span className="thidle-user-profile-observe-button-icon material-icons-round">done</span>
+            <div className={`thidle-user-profile-observe-button-observe-option ${over ? 'stop' : 'observing'}${profile.follow.status === 1 ? ' active' : ''}`}>
+                {over ? <>
+                    <span className="thidle-user-profile-observe-button-text">Unobserve</span>
+                    <span className="thidle-user-profile-observe-button-icon material-icons-round">person_remove</span>
+                </> : <>
+                    <span className="thidle-user-profile-observe-button-text">Observing</span>
+                    <span className="thidle-user-profile-observe-button-icon material-icons-round">done</span>
+                </>}
             </div>
-            <div className="thidle-user-profile-observe-button-stop-option">
-                <span className="thidle-user-profile-observe-button-text">Unobserve</span>
-                <span className="thidle-user-profile-observe-button-icon material-icons-round">person_remove</span>
+            <div className={`thidle-user-profile-observe-button-observe-option ${over ? 'stop' : 'pending'}${profile.follow.status === 2 ? ' active' : ''}`}>
+                {over ? <>
+                    <span className="thidle-user-profile-observe-button-text">Cancel</span>
+                    <span className="thidle-user-profile-observe-button-icon material-icons-round">person_remove</span>
+                </> : <>
+                    <span className="thidle-user-profile-observe-button-text">Pending</span>
+                    <span className="thidle-user-profile-observe-button-icon material-icons-round">hourglass_empty</span>
+                </>}
             </div>
         </button>
     )
 }
+
+export const PrivateProfileMessage = styled.div`
+    text-align: center;
+    padding: 40px 0px;
+    margin-top: 30px;
+    background-color: #13232e;
+    color: #ffffff4f;
+    font-family: 'Montserrat';
+    border-radius: 15px;
+    pointer-events: none;
+    font-size: 9.5pt;
+`

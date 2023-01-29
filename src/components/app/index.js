@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import styled from "styled-components";
 
 export function AdditionalOption(props){
@@ -14,39 +14,20 @@ export function AdditionalOption(props){
 
 export function Parallax(props){
     // eslint-disable-next-line
-    const [offset, setOffset] = useState(0);
     const ref = useRef();
-    let imageNaturalHeight = false;
 
     useEffect(() => {
-        // eslint-disable-next-line
-        imageNaturalHeight = ref.current?.clientHeight
-        const onScroll = () => {
-            // let newOs = document.querySelector("#thidle").scrollTop;
-            let newOs = window.scrollY;
-            let newS = calcStyle(newOs);
-            ref.current.style.transform = newS.transform;
-            ref.current.style.filter = newS.filter;
-            setOffset(newOs);
-        }
-        // let newOs = document.querySelector("#thidle").scrollTop;
-        let newOs = window.scrollY;
-        let newS = calcStyle(newOs);
-        ref.current.style.transform = newS.transform;
-        ref.current.style.filter = newS.filter;
+        const imageNaturalHeight = ref.current?.clientHeight
 
-        // document.querySelector("#thidle").removeEventListener('scroll', onScroll);
-        // document.querySelector("#thidle").addEventListener('scroll', onScroll, { passive: true });
-        // return () => document.querySelector("#thidle").removeEventListener('scroll', onScroll);
-        window.removeEventListener('scroll', onScroll);
+        const onScroll = () => {
+            const translate = Math.floor(window.scrollY*(props.strenght ?? 0.5));
+            ref.current.style.transform = `translateY(${Math.min(translate, imageNaturalHeight ? imageNaturalHeight : translate)}px)`;
+            ref.current.style.filter = `blur(${props.blur ? Math.max(Math.min(parseInt(props.blur * (props.strenght ?? 0.5) * Math.max(window.scrollY, 1) / 150), props.blur), 0) : 0}px)`;
+        }
+
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
     });
-
-    const calcStyle = (os) => {
-        let translate = Math.floor(os*(props.strenght ?? 0.5));
-        return {transform: `translateY(${Math.min(translate, imageNaturalHeight ? imageNaturalHeight : translate)}px)`, filter: `blur(${props.blur ? Math.max(Math.min(parseInt(props.blur * (props.strenght ?? 0.5) * os / 150), props.blur), 0) : 0}px)`}
-    }
 
     return (
         <ParallaxContainer>

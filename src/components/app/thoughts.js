@@ -1,44 +1,48 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { MainPostsContainer } from ".";
 import { useThoughts } from "../../contexts/thoughts";
 import { HTTPRequest, navigateTo, ProfileURL, stopPropagation, thinkDateRead } from "../../workers/commons";
+import { PrivateProfileMessage } from "./profile";
 
 export function UserThoughts({ user }){
-    const [thoughts, setThoughts] = useThoughts(`user-${user}`);
-
-    useEffect(() => {
-        if(!thoughts.loading && !thoughts.loaded){
-            setThoughts({loading: true, page: thoughts.page + 1, })
-            HTTPRequest('GET', `/v0/profile/${user}/thoughts?page=${thoughts.page}`)
-            .then(result => setThoughts({loading: false, items: result.data, loaded: true}));
-        }
-    }, [thoughts, user, setThoughts]);
-
-    return (
-        <MainPostsContainer>
-            {thoughts.items.map(thought => <Thought key={thought.id} data={thought} />)}
-        </MainPostsContainer>
-    )
+    return <Thoughts url={`/v0/profile/${user}/thoughts`} tKey={`user-${user}`} noContentMessage={`@${user} didn't shared any thoughts yet.`}/>
 }
 
 export function MainThoughts(){
-    const [thoughts, setThoughts] = useThoughts('main');
+    return <Thoughts url='/v0/thought' tKey='main' noContentMessage={'It seems too quiet arround here... Follow someone to populate your timeline!'} />
+}
+
+export function Thoughts({ url, tKey, noContentMessage }){
+    const [thoughts, setThoughts] = useThoughts(tKey);
 
     useEffect(() => {
         if(!thoughts.loading && !thoughts.loaded){
-            setThoughts({loading: true, page: thoughts.page + 1, })
-            HTTPRequest('GET', `/v0/thought?page=${thoughts.page}`)
-            .then(result => setThoughts({loading: false, items: result.data, loaded: true}));
+            setThoughts({ loading: true, page: thoughts.page + 1 })
+            HTTPRequest('GET', url, {
+                ...(thoughts.cursor ? {cursor: thoughts.cursor} : {}), 
+                ...(thoughts.mode ? {mode: thoughts.mode} : {}) 
+            })
+            .then(result => setThoughts({ loading: false, items: thoughts.mode === 'more' ? [ ...thoughts.items, ...result.data.items ] : [ ...result.data.items, ...thoughts.items ], loaded: true, cursor: result.data.cursor }));
         }
+
+        const listener = (e) => {
+            const bottom = document.body.scrollHeight - (window.scrollY + window.innerHeight);
+            if(window.innerHeight*1.5 > bottom && !thoughts.loading) setThoughts({ loaded: false, mode: 'more' })
+        }
+
+        window.addEventListener('scroll', listener);
+        return () => window.removeEventListener('scroll', listener);
     });
 
-    return (
+    return (thoughts.loaded || thoughts.items.length > 0) ? (thoughts.items.length > 0 ?
         <MainPostsContainer>
-            {thoughts.items.map(thought => (<Thought key={thought.id} data={thought} />))}
+            {thoughts.items.map(thought => <MemoThought key={thought.id} data={thought} />)}
         </MainPostsContainer>
-    )
+        :
+        <PrivateProfileMessage>{noContentMessage}</PrivateProfileMessage>) : null;
 }
+
 
 export function Thought({data, isComment, primary, hasContinuation, isSubcomment, isRethink, featured}){
     const [userLiked, setUserLiked] = useState(data.user.like);
@@ -189,15 +193,16 @@ function ThoughtImages(props){
         </div>
     )
 }
+const MemoThought = memo(Thought)
 
 function ThoughtVideos(props) {
-    const [currentImage, setCurrentImage] = useState(0);
+    // const [currentImage, setCurrentImage] = useState(0);
     const [overflowLeft, setOverflowLeft] = useState({old: 0, current: 0});
     const overflow = useRef();
     
-    function SetPosition(left){
-        setOverflowLeft({...overflowLeft, current: left});
-    }
+    // function SetPosition(left){
+    //     setOverflowLeft({...overflowLeft, current: left});
+    // }
 
     useEffect(() => {
         if(overflowLeft.old !== overflowLeft.current){
@@ -206,15 +211,15 @@ function ThoughtVideos(props) {
         }
     }, [overflowLeft])
 
-    const changeImage = (set, item = false) => {
-        let newPos = item ? set : (currentImage + set);
-        if(newPos >= 0 && newPos <= (props.videos.length-1)){
-            setCurrentImage(newPos);
-            SetPosition(newPos * overflow.current.offsetWidth);
-        } 
-    }
+    // const changeImage = (set, item = false) => {
+    //     let newPos = item ? set : (currentImage + set);
+    //     if(newPos >= 0 && newPos <= (props.videos.length-1)){
+    //         setCurrentImage(newPos);
+    //         SetPosition(newPos * overflow.current.offsetWidth);
+    //     } 
+    // }
 
-    for(let c = 0; c < props.videos.length; c++) props.videos[c].active = c === currentImage;
+    // for(let c = 0; c < props.videos.length; c++) props.videos[c].active = c === currentImage;
 
     return(
         <div className="thidle-think-content-image-album-container" onClick={stopPropagation} onMouseDown={stopPropagation}>
@@ -307,7 +312,6 @@ function ThoughtVideo({ data }) {
                 });
                 try {
                     await player.load(data.url);
-                    console.log('The video has now been loaded!');
                 } catch (e) {
                     console.log(e)
                 }

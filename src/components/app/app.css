@@ -1097,7 +1097,7 @@ img.thidle-user-profile-image {width: 100%;height: 100%;}
 
 .thidle-user-profile-info-container {margin-left: 145px; margin-top: 10px; min-height: 85px;}
 
-button.thidle-user-profile-observe-button {float: right;border-radius: 25px;background-color: transparent;border: 1px solid #c55a11;color: #c55a11;padding: 0px;text-align: center;width: 125px;cursor: pointer; padding: 3px; /*transition: background-color 0.1s, color 0.1s, border-color 0.1s; position: relative*/}
+button.thidle-user-profile-observe-button {float: right;border-radius: 25px;background-color: transparent;padding: 0px;text-align: center;width: 125px;cursor: pointer; border: none; /*transition: background-color 0.1s, color 0.1s, border-color 0.1s; position: relative*/}
 
 span.thidle-user-profile-observe-button-icon.material-icons-round {display: inline-block; margin-left: 7px; font-size: 21px; vertical-align: middle;}
 
@@ -1230,27 +1230,31 @@ span.thidle-user-profile-username-right {
 
 .user-profile-right-info-user-container.active {height: 40px;margin-bottom: 15px;}
 
-
-button.thidle-user-profile-observe-button .thidle-user-profile-observe-button-stop-option{
+button.thidle-user-profile-observe-button .thidle-user-profile-observe-button-observe-option{
+    padding: 3px;
+    border-radius: 20px;
     display: none;
 }
-button.thidle-user-profile-observe-button .thidle-user-profile-observe-button-observing-option{
-    display: none;
-}
-
-button.thidle-user-profile-observe-button.active .thidle-user-profile-observe-button-observing-option{
+button.thidle-user-profile-observe-button .thidle-user-profile-observe-button-observe-option.active{
     display: block;
 }
-button.thidle-user-profile-observe-button.active .thidle-user-profile-observe-button-observe-option{
-    display: none;
+
+.thidle-user-profile-observe-button-observe-option.observe, .thidle-user-profile-observe-button-observe-option.observing {
+    border: 1px solid #c55a11;
+    color: #c55a11;
 }
-button.thidle-user-profile-observe-button:not(.active):hover, button.thidle-user-profile-observe-button.active {
+.thidle-user-profile-observe-button-observe-option.observe.active:hover {
     background-color: #c55a11;
     color: white;
 }
-button.thidle-user-profile-observe-button.active:hover{
-    background-color: #a50a0a;
-    border-color: #a50a0a;
+.thidle-user-profile-observe-button-observe-option.stop {
+    border: 1px solid #c52611;
+    background-color: #c52611;
+    color: white;
+}
+.thidle-user-profile-observe-button-observe-option.pending {
+    border: 1px solid #aaaaaa;
+    color: #aaaaaa;
 }
 
 button.thidle-user-profile-observe-button.active:hover .thidle-user-profile-observe-button-stop-option{

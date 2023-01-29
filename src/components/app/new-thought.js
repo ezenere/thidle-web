@@ -2,6 +2,7 @@ import { useContext, useReducer, useRef, useState } from "react";
 import styled from "styled-components";
 import { AdditionalOption, OptionsContainer } from ".";
 import { useModals } from "../../contexts/modals";
+import { useThoughts } from "../../contexts/thoughts";
 import { UserContext } from "../../contexts/user";
 import { ProfileURL, stopPropagation } from "../../workers/commons";
 import { ThoughtCreator } from "../../workers/thought";
@@ -27,7 +28,7 @@ function fileReducer(state, action){
     }
 }
 
-export default function NewThought(props){
+export default function NewThought({ mtop, tKey }){
     const modals = useModals();
     const userInfo = useContext(UserContext);
     const [active, setActive] = useState(false);
@@ -36,8 +37,9 @@ export default function NewThought(props){
     const [{files}, setFiles] = useReducer(fileReducer, {currentId: 0, files: []});
     const fileInputRef = useRef();
     const [privacy, setPrivacy] = useState("P");
-    const [completePercentage, setCompletePercentage] = useState(0);
+    // const [completePercentage, setCompletePercentage] = useState(0);
     const [posting, setPosting] = useState(false);
+    const [,setThoughts] = useThoughts(tKey);
 
     const textareaInput = (e) => {
         setThoughtText(e.target.innerText);
@@ -87,7 +89,9 @@ export default function NewThought(props){
             setThoughtText("");
             setFiles({ do: 'clear' });
             setPrivacy("P");
+            textareaReference.current.value = '';
             textareaReference.current.blur();
+            setThoughts({ mode: 'new', loaded: false })
         }, function(err){
             console.log(err);
             setPosting(false);
@@ -98,7 +102,7 @@ export default function NewThought(props){
     }
 
     return (
-        <Container mtop={props.mtop}>
+        <Container mtop={mtop}>
             {posting && <SendingPostProgressContainer>
                 <SendingPostProgress/>
             </SendingPostProgressContainer>}

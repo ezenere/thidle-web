@@ -2,7 +2,7 @@ import React, { useContext, useReducer } from "react";
 
 const ThoughtsCtx = React.createContext({});
 
-const def = {limit: 30, page: 0, items: [], loading: false, loaded: false};
+const def = {limit: 30, cursor: null, mode: null, items: [], loading: false, loaded: false};
 function reduce(state, [name, value]) {
     if(name === '__clear_all__') return {}
     state[name] = { ...def, ...state[name], ...value };

@@ -98,7 +98,7 @@ export async function HTTPRequest(method, url = null, data = null, needLogin = t
 async function TryRequest(method, url, query, body, needLogin){
     if(!window.localStorage.getItem('t') && needLogin) throw new Error('You must have a session to make a request');
     return new Promise((resolve, reject) => {
-        fetch(`${apiUrl}${url}${query ? Object.entries(query).reduce((final, [key, value]) => (final + `${encodeURIComponent(key)}=${encodeURIComponent(value)}`), '?') : ''}`, {
+        fetch(`${apiUrl}${url}${query && (Object.keys(query).length > 0) ? `?${Object.entries(query).map(([key, value]) => (`${encodeURIComponent(key)}=${encodeURIComponent(value)}`)).join('&')}` : ''}`, {
             method, 
             body: body ? (body instanceof FormData ? body : JSON.stringify(body)) : undefined, 
             headers: 
@@ -106,10 +106,11 @@ async function TryRequest(method, url, query, body, needLogin){
                     ? new Headers(needLogin ? {'Authorization': `Bearer ${window.localStorage.getItem('t')}`} : {})
                     : new Headers(needLogin ? {'Authorization': `Bearer ${window.localStorage.getItem('t')}`, "Content-Type": "application/json"} : {"Content-Type": "application/json"})
         }).then(async (response) => {
-            if(response.status === 403) reject("Token Expired");
+            if(response.status === 403 && needLogin) reject("Token Expired");
             else return {
                 success: response.status.toString().substring(0, 1) === '2', 
                 status: response.status,
+                headers: response.headers,
                 data: await response.json()
             };
         }).then((result) => {
