@@ -2,7 +2,7 @@ import joypixels from "emoji-toolkit";
 import { useModals } from "../contexts/modals";
 import { DecryptToken, RemoveTokens, SetTokens } from "./auth";
 
-const apiUrl = "http://localhost:3001"; //"https://api.thidle.com/";
+const apiUrl = "https://api.thidle.com/";
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const shortMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -155,7 +155,7 @@ async function RevalidateToken(){
 }
 
 export function ProfileURL(profileImage){
-    return profileImage?.url || 'https://thidle.com/contents/assets/images/profile/picture8.png';
+    return profileImage?.url || 'https://thidle.com/static/assets/images/profile/picture8.png';
 }
 
 export function escapeHtml(unsafe)
