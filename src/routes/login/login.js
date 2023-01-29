@@ -67,9 +67,9 @@ export function Login(){
                     </Form>
                     <AlternativeFormContainer>
                         <DisplayText center fontSize="11pt">ou faça login utilizando</DisplayText>
-                        <AlternativeButton alt="Google Logo" src="/contents/assets/logos/google.png" title="Google"/>
-                        <AlternativeButton alt="Apple Logo" src="/contents/assets/logos/apple.png" title="Apple"/>
-                        <AlternativeButton alt="Facebook Logo" src="/contents/assets/logos/facebook.png" title="Facebook"/>
+                        <AlternativeButton alt="Google Logo" src="/static/assets/logos/google.png" title="Google"/>
+                        <AlternativeButton alt="Apple Logo" src="/static/assets/logos/apple.png" title="Apple"/>
+                        <AlternativeButton alt="Facebook Logo" src="/static/assets/logos/facebook.png" title="Facebook"/>
                     </AlternativeFormContainer>
                     <JoinContainer>
                         <DisplayText center fontSize='11pt'>Não tem uma conta?</DisplayText>

@@ -200,7 +200,7 @@ export const InformativeAssideContainer = styled.div`
     float: right;
     width: 50%;
     height: 100%;
-    background-image: url(/contents/assets/images/bg.png);
+    background-image: url(/static/assets/images/bg.png);
     background-repeat: no-repeat;
     background-size: cover;
     position: fixed;

@@ -6,7 +6,7 @@ export default function Menu(){
         <PageMenu>
             <MenuLogoContainer>
                 <Link to="/">
-                    <MenuLogoImage src="/contents/assets/images/thidle24-wname.png"/>
+                    <MenuLogoImage src="/static/assets/images/thidle24-wname.png"/>
                 </Link>
             </MenuLogoContainer>
             <MenuButtons>

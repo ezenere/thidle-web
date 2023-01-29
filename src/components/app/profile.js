@@ -45,7 +45,7 @@ export default function RightUserInfo(props){
                 {props?.birthday ? <RInfoDataItem value={BirthdayDate(props.birthday)} icon="cake" /> : ''}
                 {props?.details?.pronoum ? <RInfoDataItem value={props.details.pronoum.pronoums} icon={props.details.pronoum.icon} /> : ''}
                 {props?.details?.website ? <RInfoDataItem value={RemoveHttp(props.details.website)} url={props.details.website} trusted={false} icon="language" /> : ''}
-                {props?.details?.instagram ? <RInfoDataItem value={props.details.instagram} imageIcon="/contents/assets/logos/ig-icon.png" trusted={true} url={TrustedURL("https://www.instagram.com/[]?ref=thidle.com", [props.details.instagram])} /> : ''}
+                {props?.details?.instagram ? <RInfoDataItem value={props.details.instagram} imageIcon="/static/assets/logos/ig-icon.png" trusted={true} url={TrustedURL("https://www.instagram.com/[]?ref=thidle.com", [props.details.instagram])} /> : ''}
             </div>
 
             {props?.friends?.count > 0 ? <div className="user-profile-right-info-observed-by-container">

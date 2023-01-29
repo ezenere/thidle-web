@@ -90,7 +90,7 @@ function Anchor(props){
 function Logo(){
     return (
         <LogoContainer>
-            <Link to="/"><LogoImage  alt="Thidle Menu Logo" src="/contents/assets/images/thidle24-wname.png"/></Link>
+            <Link to="/"><LogoImage  alt="Thidle Menu Logo" src="/static/assets/images/thidle24-wname.png"/></Link>
         </LogoContainer>
     )
 }
